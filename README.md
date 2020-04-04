@@ -1,2 +1,11 @@
-# Numerical_Methods_Introduction
-A set of Jupyter Notebooks demonstrating various numerical methods in Python.
+# Introduction to numerical methods
+A set of Jupyter Notebooks demonstrating various numerical methods in Python. Among those are:
+
+-- Single-step time integration: Euler forward and backward, Crank-Nicolson.
+-- Finite difference, finite element, collocation, subdomain, least-squares methods
+-- Iterative Picard and Newton-Raphsons solution methods
+-- Stabilization methods: Mass lumping and finite increment calculus
+-- First aspects of localization of softening material models
+-- Concepts of staggered and monolithic coupling schemes
+
+Illustrative examples chosen include first order models, beam bending theories and Terzaghi consolidation. 
