@@ -21,3 +21,5 @@ The notebooks mainly make use of
 - Ipywidgets
 
 The latter allows an interactive adaptation of parameters to immediatly illustrate their effect, e.g. the time-step size.
+
+*Comments and contributions are welcome.*
