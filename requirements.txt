@@ -1,7 +1,6 @@
 numpy
 scipy
 matplotlib
-pandas
 ipywidgets
 sympy
 

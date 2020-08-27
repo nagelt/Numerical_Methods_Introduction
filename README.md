@@ -15,10 +15,11 @@ Illustrative examples chosen include first order models, beam bending theories a
 
 The notebooks mainly make use of
 
-- Numpy
-- Scipy
-- Matplotlib
-- Ipywidgets
+- numpy
+- scipy
+- matplotlib
+- ipywidgets
+- sympy
 
 The latter allows an interactive adaptation of parameters to immediatly illustrate their effect, e.g. the time-step size.
 
