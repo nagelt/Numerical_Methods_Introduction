@@ -22,4 +22,6 @@ The notebooks mainly make use of
 
 The latter allows an interactive adaptation of parameters to immediatly illustrate their effect, e.g. the time-step size.
 
+The notebooks can be viewed with nbviewer, see https://jupyter.org/, or can now also be run interactively using binder (available through nbviewer).
+
 *Comments and contributions are welcome.*
