@@ -4,10 +4,10 @@ plt.style.use('seaborn-deep')
 plt.rcParams['lines.linewidth']= 2.0
 plt.rcParams['lines.color']= 'black'
 plt.rcParams['legend.frameon']=True
-plt.rcParams['figure.figsize'] = (8, 6)
+plt.rcParams['figure.figsize'] = (12, 8)
 plt.rcParams['font.family'] = 'serif'
-plt.rcParams['legend.fontsize']=16
-plt.rcParams['font.size'] = 16
+plt.rcParams['legend.fontsize']=14
+plt.rcParams['font.size'] = 14
 plt.rcParams['axes.spines.right'] = False
 plt.rcParams['axes.spines.top'] = False
 plt.rcParams['axes.spines.left'] = True
