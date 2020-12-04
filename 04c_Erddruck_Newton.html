@@ -3,7 +3,7 @@
 <head><meta charset="utf-8" />
 
 
-<title>03_Generalized_Midpoint_Picard</title>
+<title>04c_Erddruck_Newton</title>
 
 <style type="text/css">
     /*!
@@ -13244,8 +13244,29 @@ Technische Universität Bergakademie Freiberg.</em></p>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Exercise-3---Generalized-midpoint-rule,-Picard-iterations">Exercise 3 - Generalized midpoint rule, Picard iterations<a class="anchor-link" href="#Exercise-3---Generalized-midpoint-rule,-Picard-iterations">&#182;</a></h1><p>The ODE $\dot{y} = k (y_\text{eq} - y)$ is to be integrated numerically.</p>
-<p>First, we import some libraries for numerical basics and for plotting.</p>
+<h1 id="Exercise-on-Earth-pressure-and-the-Newton-Raphson-scheme">Exercise on Earth pressure and the Newton-Raphson scheme<a class="anchor-link" href="#Exercise-on-Earth-pressure-and-the-Newton-Raphson-scheme">&#182;</a></h1><p><img src="Images/Erddruck.png" alt="soil_column.png"></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Geometry">Geometry<a class="anchor-link" href="#Geometry">&#182;</a></h2><p>Let the retaining wall have a vertical height $H$ and the origin be placed at the bottom of the slip surface which has length $L$. Then, the problem is characterized by the following points in the $x-z$ plane:</p>
+<ul>
+<li>Origin: $O = [0,0]$</li>
+<li>Top left: $A = [-H \tan \alpha, H]$</li>
+<li>Top right: $B = [L\cos \vartheta, L \sin \vartheta]$</li>
+</ul>
+<p>The length of the slip surface can be found via the following trigonometric relation:</p>
+\begin{align}
+    L \sin \vartheta &amp;= (L \cos \vartheta + H \tan\alpha) \tan \beta
+\end{align}<p>Thus we arrive at</p>
+\begin{align}
+    L &amp;= \frac{H(1 + \tan \alpha \tan \beta)}{\sin \vartheta - \cos \vartheta \tan \beta}
+\end{align}<p>The area of the triangle (i.e. the volume of the slip body per meter) can also be calculated. We use Gauß' equation for that:</p>
+$$
+    A = \frac{1}{2} \left| (x_2 y_3 - x_3 y_2) - (x_1 y_3 - x_3 y_1) + (x_1 y_2 - x_2 y_1) \right|
+$$<p>Let Python do the math for us ...</p>
 
 </div>
 </div>
@@ -13259,23 +13280,14 @@ Technische Universität Bergakademie Freiberg.</em></p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span> <span class="c1">#numerical methods</span>
+<span class="c1">#import sympy as sp #symbolic operations</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span> <span class="c1">#plotting</span>
+<span class="kn">import</span> <span class="nn">sympy</span> <span class="k">as</span> <span class="nn">sp</span>
+<span class="n">sp</span><span class="o">.</span><span class="n">init_printing</span><span class="p">(</span><span class="n">use_latex</span><span class="o">=</span><span class="s1">&#39;mathjax&#39;</span><span class="p">)</span> <span class="c1">#makes sympy output look nice</span>
 
 <span class="c1">#Some plot settings</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s1">&#39;seaborn-deep&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;lines.linewidth&#39;</span><span class="p">]</span><span class="o">=</span> <span class="mf">2.0</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;lines.color&#39;</span><span class="p">]</span><span class="o">=</span> <span class="s1">&#39;black&#39;</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;legend.frameon&#39;</span><span class="p">]</span><span class="o">=</span><span class="kc">True</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.family&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;serif&#39;</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;legend.fontsize&#39;</span><span class="p">]</span><span class="o">=</span><span class="mi">14</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">14</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;axes.spines.right&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;axes.spines.top&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;axes.spines.left&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;axes.spines.bottom&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;axes.axisbelow&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;figure.figsize&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">plot_functions.plot_settings</span>
 </pre></div>
 
     </div>
@@ -13285,12 +13297,7 @@ Technische Universität Bergakademie Freiberg.</em></p>
   </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>We first code the analytical solution of the ODE in order to have something to compare against.</p>
-<p>$\displaystyle \frac{\text{d}y}{y_\text{eq}-y} = k\,\text{d}t \quad \rightarrow \quad \int \limits_0^t k\,\text{d}\bar{t} = \int \limits_{y_0}^y \displaystyle \frac{\text{d}\bar{y}}{y_\text{eq}-\bar{y}}$</p>
-<p>$kt = \displaystyle \left. - \ln (y_\text{eq}-\bar{y}) \right|^y_{y_0}$</p>
-<p>$\exp (-kt) = \displaystyle \frac{y_\text{eq}-y}{y_\text{eq}-y_0}$</p>
-<p>$y = y_\text{eq} - (y_\text{eq} - y_0) \exp (-kt)$</p>
-<p>Let's define the equilibrium value and the rate constant as global variables</p>
+<p>We first define our geometrical properties:</p>
 
 </div>
 </div>
@@ -13304,8 +13311,7 @@ Technische Universität Bergakademie Freiberg.</em></p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">y_eq</span> <span class="o">=</span> <span class="mf">1.</span>
-<span class="n">k</span> <span class="o">=</span> <span class="mf">2.</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">H</span><span class="p">,</span><span class="n">alpha</span><span class="p">,</span><span class="n">beta</span><span class="p">,</span><span class="n">theta</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">symbols</span><span class="p">(</span><span class="s1">&#39;H alpha beta vartheta&#39;</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -13322,78 +13328,8 @@ Technische Universität Bergakademie Freiberg.</em></p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">y_analytical</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">y_0</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">y_eq</span> <span class="o">-</span> <span class="p">(</span><span class="n">y_eq</span> <span class="o">-</span> <span class="n">y_0</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">k</span><span class="o">*</span><span class="n">t</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-  </div>
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>According to the ODE definition $\dot{y}=f[y(t),t]$ we define the rate function itself:</p>
-
-</div>
-</div>
-</div>
-
-  
-
-  <div class="
-      cell border-box-sizing code_cell rendered">
-    <div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">dy_dt</span><span class="p">(</span><span class="n">y</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">k</span><span class="o">*</span><span class="p">(</span><span class="n">y_eq</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-  </div>
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Let's plot the function and its rate for some exemplary values ($y_0 = 0$) in a time interval $t \in [0,4]$:</p>
-
-</div>
-</div>
-</div>
-
-  
-
-  <div class="
-      cell border-box-sizing code_cell rendered">
-    <div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">100</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-  </div>
-
-  
-
-  <div class="
-      cell border-box-sizing code_cell rendered">
-    <div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">time</span><span class="p">,</span><span class="n">y_analytical</span><span class="p">(</span><span class="n">time</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;$y$&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">time</span><span class="p">,</span><span class="n">dy_dt</span><span class="p">(</span><span class="n">y_analytical</span><span class="p">(</span><span class="n">time</span><span class="p">,</span><span class="mi">0</span><span class="p">)),</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;$</span><span class="se">\\</span><span class="s1">dot</span><span class="si">{y}</span><span class="s1">$&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;$t$ / s&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;$y$, $</span><span class="se">\\</span><span class="s1">dot</span><span class="si">{y}</span><span class="s1">$ / s$^{-1}$&#39;</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">L</span> <span class="o">=</span> <span class="n">H</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">sp</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span><span class="o">*</span><span class="n">sp</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">beta</span><span class="p">))</span><span class="o">/</span><span class="p">(</span><span class="n">sp</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span> <span class="o">-</span> <span class="n">sp</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span> <span class="o">*</span> <span class="n">sp</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">beta</span><span class="p">))</span>
+<span class="n">L</span>
 </pre></div>
 
     </div>
@@ -13410,11 +13346,529 @@ Technische Universität Bergakademie Freiberg.</em></p>
 
 
 
-<div class="output_text output_subarea output_execute_result">
-<pre>Text(0, 0.5, &#39;$y$, $\\dot{y}$ / s$^{-1}$&#39;)</pre>
+<div class="output_latex output_subarea output_execute_result">
+$\displaystyle \frac{H \left(\tan{\left(\alpha \right)} \tan{\left(\beta \right)} + 1\right)}{\sin{\left(\vartheta \right)} - \cos{\left(\vartheta \right)} \tan{\left(\beta \right)}}$
 </div>
 
 </div>
+
+</div>
+</div>
+
+  </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We now define the function that calculates the area of the triangle:</p>
+
+</div>
+</div>
+</div>
+
+  
+
+  <div class="
+      cell border-box-sizing code_cell rendered">
+    <div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">triangle_area_Gauss</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">B</span><span class="p">,</span><span class="n">C</span><span class="p">):</span>
+    <span class="n">term1</span> <span class="o">=</span> <span class="p">(</span><span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">C</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">C</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">B</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">term2</span> <span class="o">=</span> <span class="p">(</span><span class="n">A</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">C</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">C</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">A</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">term3</span> <span class="o">=</span> <span class="p">(</span><span class="n">A</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">B</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">A</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">return</span> <span class="o">-</span><span class="p">(</span><span class="n">term1</span> <span class="o">-</span> <span class="n">term2</span> <span class="o">+</span> <span class="n">term3</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+  </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The points we defined above can now be inserted into this equation:</p>
+
+</div>
+</div>
+</div>
+
+  
+
+  <div class="
+      cell border-box-sizing code_cell rendered">
+    <div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">PO</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">PA</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span> <span class="n">H</span> <span class="o">*</span> <span class="n">sp</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">alpha</span><span class="p">),</span> <span class="n">H</span><span class="p">]</span>
+<span class="n">PB</span> <span class="o">=</span> <span class="p">[</span><span class="n">L</span> <span class="o">*</span> <span class="n">sp</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">),</span> <span class="n">L</span><span class="o">*</span><span class="n">sp</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)]</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">triangle_area_Gauss</span><span class="p">(</span><span class="n">PO</span><span class="p">,</span><span class="n">PA</span><span class="p">,</span><span class="n">PB</span><span class="p">)</span><span class="o">.</span><span class="n">simplify</span><span class="p">()</span>
+<span class="n">A</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    
+
+
+
+<div class="output_latex output_subarea output_execute_result">
+$\displaystyle \frac{H^{2} \left(\sin{\left(\vartheta \right)} \tan{\left(\alpha \right)} + \cos{\left(\vartheta \right)}\right) \left(\tan{\left(\alpha \right)} \tan{\left(\beta \right)} + 1\right)}{\sin{\left(\vartheta \right)} - \cos{\left(\vartheta \right)} \tan{\left(\beta \right)}}$
+</div>
+
+</div>
+
+</div>
+</div>
+
+  </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Thus, the area of our triangle is given as:</p>
+$$
+    A = \frac{H^2 (\sin \vartheta \tan \alpha + \cos \vartheta) (\tan \alpha \tan \beta + 1)}{\sin \vartheta - \cos \vartheta \tan \beta}
+$$<p>Now we can write the force balance. For that purpose, we introduce the material's specific weight $\gamma$, friction angle $\varphi$ and the wall friction angle $\delta_\text{a}$ as well as the cohesion $c$.</p>
+
+</div>
+</div>
+</div>
+
+  
+
+  <div class="
+      cell border-box-sizing code_cell rendered">
+    <div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">c</span><span class="p">,</span> <span class="n">delta</span><span class="p">,</span> <span class="n">phi</span><span class="p">,</span> <span class="n">gamma</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">symbols</span><span class="p">(</span><span class="s1">&#39;c delta_a varphi gamma&#39;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+  </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We can now calculate the downward force due to gravity as well as the cohesive force along the slip surface. The active earth pressure force $E_\text{a}$ and the reaction force $Q$ in the slip line are introduced as unknowns:</p>
+
+</div>
+</div>
+</div>
+
+  
+
+  <div class="
+      cell border-box-sizing code_cell rendered">
+    <div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">Ea</span><span class="p">,</span> <span class="n">Q</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">C</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">symbols</span><span class="p">(</span><span class="s1">&#39;E_a Q G C&#39;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+  </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We now write the vertical and horizontal equilibrium conditions:</p>
+\begin{align}
+    \text{horizontal:}\quad  0 &amp;= C \cos\vartheta - Q \sin (\vartheta - \varphi) + E_\text{a} \cos (\alpha + \delta_\text{a})
+    \\
+    \text{vertikal:}\quad  0 &amp;= C \sin\vartheta + Q \cos (\vartheta - \varphi) + E_\text{a} \sin (\alpha + \delta_\text{a}) - G
+\end{align}
+</div>
+</div>
+</div>
+
+  
+
+  <div class="
+      cell border-box-sizing code_cell rendered">
+    <div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">Fh</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Eq</span><span class="p">(</span><span class="n">C</span> <span class="o">*</span> <span class="n">sp</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span> <span class="o">-</span> <span class="n">Q</span> <span class="o">*</span> <span class="n">sp</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span> <span class="o">-</span> <span class="n">phi</span><span class="p">)</span> <span class="o">+</span> <span class="n">Ea</span> <span class="o">*</span> <span class="n">sp</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">alpha</span> <span class="o">+</span> <span class="n">delta</span><span class="p">),</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">Fv</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Eq</span><span class="p">(</span><span class="n">C</span> <span class="o">*</span> <span class="n">sp</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span> <span class="o">+</span> <span class="n">Q</span> <span class="o">*</span> <span class="n">sp</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span> <span class="o">-</span> <span class="n">phi</span><span class="p">)</span> <span class="o">+</span> <span class="n">Ea</span> <span class="o">*</span> <span class="n">sp</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">alpha</span> <span class="o">+</span> <span class="n">delta</span><span class="p">)</span> <span class="o">-</span> <span class="n">G</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+  </div>
+
+  
+
+  <div class="
+      cell border-box-sizing code_cell rendered">
+    <div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">Fh</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    
+
+
+
+<div class="output_latex output_subarea output_execute_result">
+$\displaystyle C \cos{\left(\vartheta \right)} + E_{a} \cos{\left(\alpha + \delta_{a} \right)} + Q \sin{\left(\varphi - \vartheta \right)} = 0$
+</div>
+
+</div>
+
+</div>
+</div>
+
+  </div>
+
+  
+
+  <div class="
+      cell border-box-sizing code_cell rendered">
+    <div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">Fv</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    
+
+
+
+<div class="output_latex output_subarea output_execute_result">
+$\displaystyle C \sin{\left(\vartheta \right)} + E_{a} \sin{\left(\alpha + \delta_{a} \right)} - G + Q \cos{\left(\varphi - \vartheta \right)} = 0$
+</div>
+
+</div>
+
+</div>
+</div>
+
+  </div>
+
+  
+
+  <div class="
+      cell border-box-sizing code_cell rendered">
+    <div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">result</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">solve</span><span class="p">([</span><span class="n">Fh</span><span class="p">,</span><span class="n">Fv</span><span class="p">],(</span><span class="n">Ea</span><span class="p">,</span><span class="n">Q</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+  </div>
+
+  
+
+  <div class="
+      cell border-box-sizing code_cell rendered">
+    <div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">result</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    
+
+
+
+<div class="output_latex output_subarea output_execute_result">
+$\displaystyle \left\{ E_{a} : - \frac{C \cos{\left(\varphi \right)} + G \sin{\left(\varphi - \vartheta \right)}}{\cos{\left(\alpha + \delta_{a} + \varphi - \vartheta \right)}}, \  Q : \frac{C \sin{\left(\alpha + \delta_{a} - \vartheta \right)} + G \cos{\left(\alpha + \delta_{a} \right)}}{\cos{\left(\alpha + \delta_{a} + \varphi - \vartheta \right)}}\right\}$
+</div>
+
+</div>
+
+</div>
+</div>
+
+  </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Gravitational and cohesive forces can be determined based on material properties and geometry:</p>
+
+</div>
+</div>
+</div>
+
+  
+
+  <div class="
+      cell border-box-sizing code_cell rendered">
+    <div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">Ea</span><span class="p">)</span><span class="o">.</span><span class="n">subs</span><span class="p">(</span><span class="n">C</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">subs</span><span class="p">(</span><span class="n">G</span><span class="p">,</span><span class="n">A</span><span class="o">*</span><span class="n">gamma</span><span class="p">)</span><span class="o">.</span><span class="n">simplify</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    
+
+
+
+<div class="output_latex output_subarea output_execute_result">
+$\displaystyle - \frac{H^{2} \gamma \left(\sin{\left(\vartheta \right)} \tan{\left(\alpha \right)} + \cos{\left(\vartheta \right)}\right) \left(\tan{\left(\alpha \right)} \tan{\left(\beta \right)} + 1\right) \sin{\left(\varphi - \vartheta \right)}}{\left(\sin{\left(\vartheta \right)} - \cos{\left(\vartheta \right)} \tan{\left(\beta \right)}\right) \cos{\left(\alpha + \delta_{a} + \varphi - \vartheta \right)}}$
+</div>
+
+</div>
+
+</div>
+</div>
+
+  </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Now we would have to find the maximum with respect to $\vartheta$ in order to identify the active earth pressure and the critical slip angle $\vartheta_\text{a}$. The equations get very complex and we decide to go for a numerical solution.</p>
+<p>First, we define the basic geometry of our problem:</p>
+
+</div>
+</div>
+</div>
+
+  
+
+  <div class="
+      cell border-box-sizing code_cell rendered">
+    <div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">alpha</span> <span class="o">=</span> <span class="mf">10.</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mf">180.</span>
+<span class="n">beta</span> <span class="o">=</span> <span class="mf">20.</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mf">180.</span>
+<span class="n">H</span> <span class="o">=</span> <span class="mf">4.</span> <span class="c1">#m</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+  </div>
+
+  
+
+  <div class="
+      cell border-box-sizing code_cell rendered">
+    <div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">slip_length</span><span class="p">(</span><span class="n">theta</span><span class="p">):</span>
+    <span class="n">L</span> <span class="o">=</span> <span class="n">H</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">beta</span><span class="p">))</span><span class="o">/</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">beta</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">L</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+  </div>
+
+  
+
+  <div class="
+      cell border-box-sizing code_cell rendered">
+    <div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">area</span><span class="p">(</span><span class="n">theta</span><span class="p">):</span>
+    <span class="n">L</span> <span class="o">=</span> <span class="n">slip_length</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span> <span class="n">H</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">alpha</span><span class="p">),</span> <span class="n">H</span><span class="p">])</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">L</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">),</span> <span class="n">L</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)])</span>
+    <span class="n">term1</span> <span class="o">=</span> <span class="p">(</span><span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">C</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">C</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">B</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">term2</span> <span class="o">=</span> <span class="p">(</span><span class="n">A</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">C</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">C</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">A</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">term3</span> <span class="o">=</span> <span class="p">(</span><span class="n">A</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">B</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">A</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">((</span><span class="n">term1</span> <span class="o">-</span> <span class="n">term2</span> <span class="o">+</span> <span class="n">term3</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+  </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Now we define the material properties and the interaction with the wall:</p>
+
+</div>
+</div>
+</div>
+
+  
+
+  <div class="
+      cell border-box-sizing code_cell rendered">
+    <div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">gamma</span> <span class="o">=</span> <span class="mf">16.e3</span> <span class="c1">#N/m³</span>
+<span class="n">phi</span> <span class="o">=</span> <span class="mf">30.</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mf">180.</span>
+<span class="n">c</span> <span class="o">=</span> <span class="mf">30.e3</span> <span class="c1">#N/m²</span>
+<span class="n">delta</span> <span class="o">=</span> <span class="mf">10.</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mf">180.</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+  </div>
+
+  
+
+  <div class="
+      cell border-box-sizing code_cell rendered">
+    <div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">cohesive_force</span><span class="p">(</span><span class="n">theta</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">c</span> <span class="o">*</span> <span class="n">slip_length</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+  </div>
+
+  
+
+  <div class="
+      cell border-box-sizing code_cell rendered">
+    <div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">weight</span><span class="p">(</span><span class="n">theta</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">gamma</span><span class="o">*</span><span class="n">area</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+  </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Now we have all the ingredients to calculate the active earth pressure given by the equation above:</p>
+
+</div>
+</div>
+</div>
+
+  
+
+  <div class="
+      cell border-box-sizing code_cell rendered">
+    <div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">Ea</span><span class="p">(</span><span class="n">theta</span><span class="p">):</span>
+    <span class="n">term1</span> <span class="o">=</span> <span class="n">weight</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="o">-</span><span class="n">phi</span><span class="p">)</span> <span class="o">-</span> <span class="n">cohesive_force</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span>
+    <span class="n">term2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">alpha</span><span class="o">+</span><span class="n">delta</span><span class="o">+</span><span class="n">phi</span><span class="o">-</span><span class="n">theta</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">term1</span><span class="o">/</span><span class="n">term2</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+  </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Let's take a look at the result:</p>
+
+</div>
+</div>
+</div>
+
+  
+
+  <div class="
+      cell border-box-sizing code_cell rendered">
+    <div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">thetas</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">6</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="mf">0.9</span><span class="p">,</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">thetas</span><span class="o">*</span><span class="mi">180</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span><span class="n">Ea</span><span class="p">(</span><span class="n">thetas</span><span class="p">)</span><span class="o">/</span><span class="mf">1e6</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;$</span><span class="se">\\</span><span class="s1">vartheta$ / °&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;$E_</span><span class="se">\\</span><span class="s1">mathrm</span><span class="si">{a}</span><span class="s1">$ / MN m$^{-1}$&#39;</span><span class="p">);</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
 
 <div class="output_area">
 
@@ -13423,7 +13877,7 @@ Technische Universität Bergakademie Freiberg.</em></p>
 
 
 <div class="output_png output_subarea ">
-<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgwAAAF9CAYAAABoEDD2AAAAOXRFWHRTb2Z0d2FyZQBNYXRwbG90bGliIHZlcnNpb24zLjMuMCwgaHR0cHM6Ly9tYXRwbG90bGliLm9yZy86wFpkAAAACXBIWXMAAAsTAAALEwEAmpwYAABQWElEQVR4nO3dd3xc1Z338c9vZtSbZVm2ZFvuBRdwQQab6oApAUJ62VSyS2DzkATyBJKQEHZJSBbSFpInIWE3iUMIARIgCQRDaKbYBtw77r3KkiWrl5nz/DEjWR5kq3hGc0f6vnnNa+aee865v+uLND/de+655pxDRERE5FR8iQ5AREREvE8Jg4iIiHRKCYOIiIh0SgmDiIiIdEoJg4iIiHRKCYOIiIh0KpDoALzsyiuvdM8991yiwxAREektdrIVOsNwCkeOHEl0CCIiIp6ghEFEREQ6pYRBREREOqWEQURERDqlhEFEREQ6pYRBREREOqXbKkVEpN8KhUIcOXKEyspKgsFgosOJu/T0dIYPH05KSkq32yphEBGRfmvv3r2YGaNGjSIlJQWzk05DkPScc5SXl7N3715Gjx7d7fa6JCEiIv1WbW0tw4YNIzU1tU8nCwBmRkFBAQ0NDT1q75mEwcyuMbNnzewlM3vTzBaY2VldaJdrZvPNbKmZrTCze80sEFWn2Mz+ZmZLInVujd+eiIhIMvH5PPNVGHenkxR56V9pPvCwc+5S59xsYDXwkpkN6UI7v3NuFjAbuBD4butKM/MBTwNrnHNzgPcAXzSzG2K/CyIiIn2TlxKG15xzj7Rb/gkwCLj8ZA3MbCrwQeCHAM65JuA+4BYzy45UuwqYHukP51wV8GvgDuvr559ERERixDMJg3PuQ1FF9ZH3tFM0mwc0AOvalS0FMoAL2tXZ5pyrjKpTAkzsabzd9eaeFfxm+aPsPXagtzYpIiISM55JGDowh3Ay8PdT1BkDHHLOuXZlB9uta32P/paOrtPGzG4ws2VmtqysrKz7UZ/EW3tX8vzWV9l8ZEfM+hQREektnkwYIpcKvgPc4Zw7fIqqWUBjVFnrcmY36rRxzj3onCt1zpUWFhZ2L/BTGJE3DIDdlXtj1qeIiEhv8WTCAPwA2OWc+0kn9Wp59yWL1uW6btSJu5EDIglD1f7e2qSIiPRhw4cP56c//ekJZWvXriU9PZ0NGzbEfHuem7jJzG4BJgMf7kL17cBgM7N2lyWKIu/b2tW5MqpddJ24GxFJGHZV7sU51+fv9xURSVbv+9rfErLdp3/y/m7VnzNnDkuXLj2h7JZbbuH6669n8uTJsQwN8NgZBjO7nvBdDR9zzrWY2Rgzm3eKJi8QHuA4pV1ZKeEBk4va1RlnZgOi6uxxzm2KWfCdKMjIJzMlg+qmWiobjvXWZkVEpI+KThj++te/snLlSu666664bM8zZxjM7BPAt4HrgDMjf4GfDRQDL0bq3A18ACh1zjU459ab2VPAbcDnzCwFuBm4zzlXE+l6AbAK+CrwH2aWC9wA3N07exZmZowcMIyNZVvZXbWP/Iy83ty8iIh0UXf/0k+U2bNn87WvfY2KigqysrK49dZbufPOOykoKIjL9jyTMAB/IBzPwqjy9qlSOuGBiu3P518H/NzMlgJ+wsnFna0rnXMhM7sW+JWZLYn08aBz7sFY70BnSvKGsrFsK7sq9zGtKPani0REpP84++yzSU1NZdmyZaxcuZJAIMBNN90Ut+15JmFwznX66Czn3K3ArVFlx4DPddJuP3DtaQUYAyPzhgOwu2pfgiMREZFkl5aWxowZM3j66af5/e9/zyOPPNKjp1B2lafGMPR1bXdKVCphEBGR0zdnzhx+8YtfMGfOHK655pq4bksJQy8qyRsKwN5jB2kJ9f3nrouISHxNnz4dn8/3rtsr40EJQy/KSElncFYBLaEWDlafaj4qERGRzj388MPceOONTJkypfPKp8kzYxj6ixEDhnO4tpxdVXsZnlec6HBERCTJhEIhysrKmD9/PuvWrePxxx/vle3qDEMvGxG5LLG7UjM+iohI97322msUFxczf/58nnjiCfLz83tluzrD0MtaBz7u0p0SIiLSA3PnziUUCvX6dnWGoZe1PoRqj+6UEBGRJKKEoZcVZReS4k+hrK6Cuqb6RIcjIiLSJUoYepnf56ckNzzYURM4iYhIslDCkACtlyWUMIiISLJQwpAAxx91rYRBRESSgxKGBGi7tbJKt1aKiEhyUMKQAO2fKeGcS3A0IiIinVPCkAB56bnkpedS39JAWV1FosMRERHplBKGBDk+46PGMYiIiPcpYUiQkXmtAx/3JjgSERFJZrt37yY7O5uVK1fGdTuaGjpBRuWXALCjck+CIxERkWQ2dOhQVq1aRUlJSVy3o4QhQUa3JgxHlTCIiEjPBQIBxo0bF/ft6JJEggzNGRKeIrq2nJqm2kSHIyIickpKGBLE7/MzKjKOYedRjWMQERFvU8KQQKN0WUJERHpo+PDh/PSnPz2hbO3ataSnp7Nhw4aYb08JQwKNzh8BaOCjiIh035w5c1i6dOkJZbfccgvXX389kydPjvn2NOgxgY4PfNyd4EhERKTVxx77YkK2+/jHH+hW/Tlz5vDLX/6ybfmvf/0rK1eu5PHHH491aIDOMCRUSd5QfOZjf/UhGloaEx2OiIgkkdmzZ7Nt2zYqKipobGzk1ltv5c4776SgoCAu29MZhgRK9adQklvMrqp97K7cx4RBYxIdkohIv9fdv/QT5eyzzyY1NZVly5axcuVKAoEAN910U9y256kzDGaWamb3mFmLmY3qpO51ZvaOmS2MejWa2Qfb1avsoM7H474zXaSBjyIi0hNpaWnMmDGDp59+mu9///v8+Mc/JiUlJW7b88wZhkiC8CdgM+DvYrN7nHPz2/UxBlgOPNeuzirn3NzYRBl7o/NLeHXnmxrHICIi3TZnzhzuv/9+LrvsMq655pq4bsszCQOQDXwGGA58tgv1/9pB2eeAR51z9TGMK65Ga4poERHpoenTp+Pz+d51e2U8eCZhcM6tAzCz4V2sX9l+2cyMcKLxsZgHF0ejBoQThj1VB2gJthDwe+aQiIiIxz388MPceOONTJkyJe7b6kvfTu8BapxzS6PKi8zsMaAYaCJ8ZuIB51ywl+PrUEZKOsXZgzlQc5i9xw60jWkQERHpSCgUoqysjPnz57Nu3bq43UYZzVODHk/TdcBvOijfCtzhnLsIuB74CvCzk3ViZjeY2TIzW1ZWVhaXQKNp4KOIiHTVa6+9RnFxMfPnz+eJJ54gPz+/V7bbJxIGM8sB3gc8HL3OOXeNc25L5PNO4F7gi2Y2sKO+nHMPOudKnXOlhYWFcYz6OD25UkREumru3LmEQiE2btzIeeed12vb7RMJA+FxCy855450oe42wADPTHqggY8iIuJ1fSVhuI4OLkeY2aVmdm1U8bDIu2fuYxwdGfi4s3IvoVAowdGIiIi8W9IkDGZ2t5mtM7P0qPJxwCjg+Q6alQC3mVlmpG4e8FXgCefc4TiH3GW56TkUZOTT2NLIwRrPhCUiItLGM3dJmFkq8E9gQKToUTPb75z7UGQ5HcgkfDmhveuAh5xzHf1p/hIwE3jFzBqAHOBl4K7YRn/6RueXUF5/lO1H9zA0tyjR4YiIiJzAMwmDc64JmHuK9bcCt3ZQfscp2uwhfFeE543KL2HZ/jXsOLqbC0bOSnQ4IiL9hnOO8FQ+fZ9zrsdtk+aSRF83duBIALZrimgRkV6TkpJCfX3STA582pqbmwkEenauQAmDR7QmDNsqdmngo4hILxk8eDD79u2jrq7utP76TgahUIhDhw6Rl5fXo/aeuSTR3w1Iz2VQ5kCO1FWwr/ogJXlDEx2SiEifl5ubC8D+/ftpbm5OcDTxl5WVxaBBg3rUVgmDh4wbOIojdRVsq9ilhEFEpJfk5ua2JQ5ycrok4SGtlyW2lu9MbCAiIiJRlDB4yLiCUUB4HIOIiIiXKGHwkDH5IzCMnVV7aQ72/WtpIiKSPJQweEhGSjrDcosIhoLsqtyX6HBERETaKGHwmLZxDBU7ExuIiIhIO0oYPGbcwFGAEgYREfEWJQwe0zbwsVwDH0VExDuUMHjMyLxhBHwB9lUfpK6p/0xXKiIi3qaEwWMC/gCjBgwHYPtRnWUQERFvUMLgQccHPiphEBERb1DC4EEa+CgiIl6jhMGDxhZEnlypgY8iIuIRShg8aGjOEDIC6ZTXH+VofVWiwxEREVHC4EU+87WNY9imyxIiIuIBShg8SjM+ioiIlyhh8KjWCZy2lO9IbCAiIiIoYfCsCQVjANhSvpNQKJTgaEREpL9TwuBR+Rl5DM4qoKGlkd1V+xMdjoiI9HNKGDxswqCxAGwu35bgSEREpL9TwuBhEyOXJTYd2Z7gSEREpL9TwuBhEweFE4bNShhERCTBPJUwmFmqmd1jZi1mNqoL9d8xs4VRr5uj6uSa2XwzW2pmK8zsXjMLxG0nYqgkbyjpgTQO1R6hUhM4iYhIAnkmYYgkCK8CxYC/i80OOufmRr3uj6ozH/A752YBs4ELge/GKOy48vv8jI/cXrmpXGcZREQkcTyTMADZwGeA38WqQzObCnwQ+CGAc64JuA+4xcyyY7WdeJpQEB74qHEMIiKSSJ5JGJxz65xzW2Pc7TygAVjXrmwpkAFcEONtxcXE1jsllDCIiEgCJcW1/FPIMrPfAuOAEPAi8GPnXENk/RjgkHPOtWtzsN06zxtfMArD2H50N03BZlL9KYkOSURE+iHPnGHooU3AA865i4CPAFcBf2m3PgtojGrTupzZUYdmdoOZLTOzZWVlZbGOt9uyUjMZnldMS6iFHUd3JzocERHpp5I6YXDOfdo5tzTy+QjwHeBqM5seqVILpEU1a12uO0mfDzrnSp1zpYWFhXGIuvs0H4OIiCRaUicMHWidEnFc5H07MNjMrF2doqi6njdhUGvCkDQhi4hIH5O0CYOZnWlm10cVD4u8t567f4HwAMcp7eqUAvXAovhGGDvtBz6eOBxDRESkdyRNwmBmd5vZOjNLjxQVAF83s4LI+jTgduAtYDmAc2498BRwW6ROCnAzcJ9zrqaXd6HHirILyUnLpqqxmkO1RxIdjoiI9EOeSRgiszwuJDxPAsCjZvZkuyrphAcqtl5eWEN4gOOzkXaLCN8Bca1zLtiu3XWR/pcSTiYWA3fGZSfixMzaxjHo9koREUkEz9xWGZlUae4p1t8K3NpuuQL4Vhf6PQZ8LgYhJtSEQWNYtn8Nm45s46JR5yY6HBER6Wc8c4ZBTq31QVTvlMV6bisREZHOKWFIEmMHjiLFF2DPsQMca0ya4RciItJHKGFIEqn+FMYXjAZ0lkFERHqfEoYkMnnweAA2HN6c4EhERKS/UcKQRCYXRhKGsi0JjkRERPobJQxJZHzBGPw+P7sq91HTVJvocEREpB9RwpBE0gKpjBs4CofjnTJNEy0iIr1HCUOS0WUJERFJBCUMSaZ14OPGw0oYRESk9yhhSDITC8bgMx/bK3dT11yf6HBERKSfUMKQZNJT0hmbPwLnnB53LSIivUYJQxKaNHgCABt0WUJERHqJEoYkpIGPIiLS25QwJKEzCsdiZmyv2EVDS2OiwxERkX5ACUMSykzJYPSAEoIuxOYj2xMdjoiI9ANKGJLU5NZxDGV6roSIiMSfEoYk1TaOQQMfRUSkFyhhSFKTCsdhZmyp2ElDc0OiwxERkT5OCUOSykrNZGz+SIKhIBvKtiY6HBER6eOUMCSxs4rOAGDtoXcSHImIiPR1ShiS2JlDJgFKGEREJP6UMCSxCQWjSfOnsrtqH5X1VYkOR0RE+jAlDEksxZ/CpMJxAKw9tCnB0YiISF+mhCHJ6bKEiIj0BiUMSe7MIccHPjrnEhyNiIj0VZ5KGMws1czuMbMWMxvVSd0hZvYDM3vDzBaa2Uozu93MAlH1KiPr278+Htcd6UUjBgwlLy2H8vqj7K8+lOhwRESkjwp0XqV3RBKEPwGbAX8XmnwUuAKY65yrNrMSYAWQAdzZrt4q59zc2EbrHT7zMXXIRBbtXsbaQ+8wLLco0SGJiEgf5KUzDNnAZ4DfdbH+YeBHzrlqAOfcHuBx4FPxCc+7WscxrNE4BhERiRPPnGFwzq0DMLPhXaz/eAfF9UBaLONKBmdFxjGsP7yJYCiI39eVEzQiIiJd56UzDLEwh/BZhvaKzOwxM3vNzF40sy+ZWZ/6Rh2UNZDinMHUNzewrWJXosMREZE+qM8kDGY2DxgBfDdq1VbgDufcRcD1wFeAn52inxvMbJmZLSsrK4tbvLHWereELkuIiEg89ImEwcxGAg8A1zrnKtuvc85d45zbEvm8E7gX+KKZDeyoL+fcg865UudcaWFhYXwDj6GzNB+DiIjEUdInDGY2BPgbcL1zbmUXmmwDDBgT18B62ZTBEzAzNh/ZRl1zfaLDERGRPiapEwYzyweeAW53zr0aKbuh3fpLzezaqGbDIu+7eyfK3pGVmsnEgjEEXUhnGUREJOaSJmEws7vNbJ2ZpUeWs4EFwItAmZmVmlkpcGO7ZiXAbWaWGWmTB3wVeMI5d7h39yD+ZhRPBWDl/nUJjkRERPoaz9xWaWapwD+BAZGiR81sv3PuQ5HldCCT8OUEgJuBcyOvb56k25eAmcArZtYA5AAvA3fFfAc8YEbxVP609m+sPLAe5xxm1nkjERGRLvBMwuCcawLmnmL9rcCt7Za/D3y/kz73EL4rol8YOWAY+Rl5HK2vYlflXkbllyQ6JBER6SOS5pKEdM7M2i5LrDigyxIiIhI7p5UwmNm5sQpEYmNm6ziGA+sTHImIiPQlp3uG4c8xiUJiZuqQifh9fjaXb6emsTbR4YiISB/R6RgGM+vomQ0QHnzY4eRHkjiZKRlMGjSOdYc3sfrQBs4fMSvRIYmISB/QlUGP8wg/RbImqtyAi2IekZy2GcVTWXd4Eyv3r1fCICIiMdGVhGEhUO2cey16hZmtiXlEctpmDJ3CH1Y/wcqD6wm5ED7T2FYRETk9nX6TOOc+1FGyEFl3WexDktM1LKeIwqwCqhtr2F7Rpya0FBGRBOn2n55mVhSPQCR2wrdXTgF0e6WIiMRGT85V/zPmUUjMHb+9UgmDiIicvp4kDJpvOAlMGTyRFF+AbRW7OFpflehwREQkyfUkYXAxj0JiLi2QyplDzgBg+X6NTRURkdOj4fN92DnDpwOwdN/qxAYiIiJJTwlDH3b20DMxjLWHNlHXXJ/ocEREJIn1JGEIxjwKiYu89FwmDhpDS6iFVXq2hIiInIZuJwzOuRnxCETio/WyxNu6LCEiIqchJpckzCzXzD5oZlNj0Z/ETumwaQCs3L+O5mBzgqMREZFk1aOEwcx+YGZlZjbLzDKBpcAfgDfN7LMxjVBOS1F2ISPyhlHf0sD6w1sSHY6IiCSpnp5hmAtMcs4tBT4F5AOjgHHATTGJTGLmnOHhswxv71uV2EBERCRp9TRhqHfOHYl8/gTwO+fcEefcQaAuNqFJrMwaNh2AZftWE3KhxAYjIiJJqacJQ46ZjTSz9wAXA/MBzMwPZMYoNomRUQOGU5g5kMqGY2wt35nocEREJAn1NGG4D9gKvAg87JzbaGazgZcBPbzAY8yMWZHBj5rESUREeqJHCYNz7hFgBHC2c+66SPFu4E7gW7EJTWJplmZ9FBGR0xDoaUPn3AHgQLvl/cD+WAQlsXfGoLHkpGaxv/oQe6r2U5I3NNEhiYhIEtHU0P2E3+dvuyyxZM/yBEcjIiLJRglDP3LeiFIAFu9ejnN66KiIiHSd5xIGM0s1s3vMrMXMRnWhfq6ZzTezpWa2wszuNbNAVJ1iM/ubmS2J1Lk1bjvgYVMGTyA3LZv91YfYVbk30eGIiEgS6XLCYGb3mdllZpYar2AiCcKrQDHg72Kz+YDfOTcLmA1cCHy3XZ8+4GlgjXNuDvAe4ItmdkPsIk8Ofp+fc4eHHwWyWJclRESkG7pzhqEG+CFwxMz+bmY3mllJjOPJBj4D/K4rlSPPrvhgJC6cc02Eb/m8xcyyI9WuAqYDP4nUqQJ+DdxhZhbD2JPC8csSy3RZQkREuqzLd0k45+4g/CVbTPhL+Crgh2a2G3gW+AfwhnM9n0rQObcOwMyGd7HJPKCBE+d+WApkABcAz0XqbHPOVUbVKQEmAu/0NN5kNGnQOAak53K4tpxtFbsYVzAq0SGJSB/mnMM5cO0/O/eu5XDdcD3a1kevC1dobdtW3roO3rX+hLYdrG//d1NbWVvBCW/v+iOrdfHk7d69jeh/mxOWo9t30M7x7sIxQ/NIT+vxTY9d1u0tRG6n/A3wGzNLIXwJ4CrgV0Cxmb1AOIF42jlXHstgOzAGOORO/Fc/2G5d6/sBTtS+Tr9KGHw+H7NLZvLcloUs3rNcCYNIN4RCjmAoRHNL+NUSDNESdASDIZqDIVpaQgRDjuaWEMHQ8XUtQde2HGotDzlCwRAtIUcwsj7cf+QVDPcVco5Qa33Xvi7hda11QsfrhEIO59y76ri2z5zwubW+cxyv1/rF7trXBzhxXbjNyZMBib+ffW0uo4fmxX07p5WSOOeaCc/u+DJwa2QMwtXAR4FBwI9PN8BOZAGNUWWty5ndqNMmMrbhBoARI0bEJkqPOa+klOe2LGTJnuV8etoH8Znnxr6KdKolGKKhKUhjUwsNTUEaGsPvjc1BmpqDNEZ9bmqOLLeEaGoO0hz13tQSorklSFNzJCEIhmiOrG8JhiJJgL4Be8osPOuszwCsbdkMLLK+rTzS4F3lBka4wsnatG2r/TLt2kYKjrc/3gdRZe2XW4ujr2QfX39ixeh27WPpqH27SE7sh3eLjiEttatD/k5PTM9hOOd2Ar+IvHpDLZAWVda6XNeuTm4nddo45x4EHgQoLS3tk78dJgwaTUFGPuV1R9lSvoOJg8YmOiTpJ5xz1De2UFvfQm1DM7X1zdQ2NFNX30xtQwt1Dc3UN7ZQF/lc19BCQ1ML9Y2tr+OJQUswMQ9SC/iNlICPgD/88vt9kWU7vuz34Y8sB/w+/D4LL/t8+CLvfr9FyiPrI599ZgT8hi9S5vO1fvYdX7Zwfz47vt5ndsJ6ny/yBd263L4sUm5Gu/qR5ciXUWv58S/6E7/kT1gGzBeVDNAuIeh/w8X6pPhf9Iiv7cBgM7N2lyWKIu/b2tW5MqpddJ1+xWc+5pTM5JnNL7F493IlDNIjjc1BjtU0UVXbyLHapsirkeraZqrrmqiubaK6roma+mZq6pqpqW+itr6ZWP2R7vMZ6al+0lP9pKUGwu8pftJTA6RFPqem+ElLDb+npvjaylIDvsh7uDwlxU9KwEdqwEdKIPy59RXwt372E/Cbvvyk30r2hOEF4L+BKRwf+FgK1AOL2tX5kpkNaDfwsRTY45zb1Iuxesp5I0p5ZvNLvLlnBZ+b/hF8Pl2WEAgGQ1TWNFJxrIGKqgaOVjeGX8caOFrdQFVNE5XVjVTWNFLf2NKjbaSn+snKSAm/0sPvmekBMtNTyEoPkJEeIDMthYy08OeMtACZaeH39LRwYpCRFiAl4NOXt0gvSqqEwczuBj4AlDrnGpxz683sKeA24HORQZg3A/c552oizRYAq4CvAv9hZrmExyjc3dvxe8nYgSMZnFXA4dpyNpRtYeqQiYkOSeIsFHIcrW6grLKesop6yirrOFLVwJHKeo5U1lNeVU9ldWOXzwD4fUZediq5WWnkZqW2vXJaP2emkp2ZSnZmCjmZqWRHkoSAX8mpSDLqUcJgZmc452J+d0FkUqh/AgMiRY+a2X7n3Iciy+mEByq2/7PiOuDnZraU8GRPLxJ+aiYAzrmQmV0L/MrMlkT6eDAyVqHfMjMuGDmLJzc8x2u73lLC0EfUN7ZwsLyW/WW1HCiv5VBFHYfKazlYUUfZ0fpOr/ubwYCcNAbmpjMwN538nDTyI+8DctLIz0knLzuVAdlpZGWk6C98kX7EejJ5j5nVEx4Y+J/OuaMxj8ojSktL3bJlyxIdRtzsP3aQWxbcRXogjQfffy/pgejxo+JFwZDjUEUtew/XsO9wTfi9rIb9ZTUcrY6+IehEuVmpDM7PoDA/k8L8DAoHZDBoQAaD8jIoyMsgPzdNZwBE+reT/hXQ00sS5xAeO7DFzO4CfumcC/awL0mQoblFjC8YzZbyHSzdu5oLR52T6JCkHeccRyob2Hmgip0HjrH7YDW7D1az93A1TS0dnykI+H0UD8qkuCCbooJMigqyGFKQSdHATAbnZ/bK5C4i0jd1+tvDzKYBGyJzLgDgnFsLzDOzDwA/Ivxshq855xbELVKJi4tHncuW8h28tutNJQwJFAyG2FtWw7a9VWzbV8m2veEkoba+ucP6BXnplAzOYfjgbIYNzmZYYfhVMCADv0+XCUQk9rry58YbwDTCtyeewDn3VzN7lvCAwkfNbBHwf+MxvkHi47ySUuav/AtrDr1DRV0lAzMHJDqkPs85x6GKOrbsrmTznqNs3n2UbfuqaGx690m6nMxURg/NZdTQXEYW5TKiKIeSwTlkZaQkIHIR6c+6kjBMBvafYn0msBz4PXATsMbMfgV8J/KgJ/Gw7LQszh56Jm/tXcnru97m/ZMuT3RIfU5LMMS2vZVs3FnBhh0VbNxZQWUHYw2GDMxk7PA8xg4bwJhheYwZlkd+TpoGFoqIJ3SaMDjn9kSXmdktwKzIayzQRPjWxfsj758GNpjZh5xzb8UuXImHi0edy1t7V/Lqzje59ozL9AV1mlqCIbbsrmTttiOs23aEjTsraIg6e5CTmcrEkflMGJHPhBEDGF+ST25W3J4cLyJy2no6AuprwBLgAeBNYHnk0dKtHjKzbwC/JTypknjY9KIp5KRls/fYAXYc3c2YgSMTHVJScc6x93ANKzcfZtXmMtZtO0J944kJwrDCbCaPHsjk0QOZNLqAoYOylJiJSFLpUcLgnCvpQrXfAT/oSf/SuwL+ABeMmMWCLa/w6s63lDB0QUNTC2u2HmHZxkMs23iIsqP1J6wfVpjNWeMGcebYQUwdW0B+bnqCIhURiY143mNVBlwSx/4lhi4edS4LtrzCG7uX8pnpHybg652nnyWTqppG3l5/kMVrD7BmS9kJtzbmZacybXwhMyYUMm38YArzMxIYqYhI7MUtYYg8DOrVePUvsTU6fwQlucXsOXaAlQfWMWvYtESH5AlHjzXwxur9LF67nw3by0+YNnlcyQBmTRpC6aQhjBs+AJ9uZxSRPkyzuAgQnip67ujz+MPqJ3hp2xv9OmE4VtvEkrX7eW3lPtZtO9KWJAT8xvRxhcw5s5hzpxTpMoOI9CtKGKTNxaNn86e1f2PlwfUcqa1gUNbARIfUa1qCIZZvPMRLy/awdMNBWoLhLCHg9zHrjMFcMG0osyYXaf4DEem3lDBIm9y0bM4ZPp3Fu5fx8o5FfGzq+xIdUtztOVTNc2/u5NUVe6mqCd/o4zOYMaGQi2YMZ/aZxWQrSRARiW3CYGZ5mqwpuc0bc0E4Ydi+mA9Pvgp/Hxz82NwSZPGaAyxYspP128vbykuG5DBvVgkXzxxOQZ4GLYqItBfrMwxHzWwrcLtz7okY9y29YMrgCRRnD+ZAzWFWHlhHaR8ay1BxrIFnF+1gwZKdHKsNn01IT/Vz8czhXH7uSMaXDNDcCCIiJxHrhOFyYBJwr5n5nXOPx7h/iTMz49KxF/Dw6id5cdsbfSJh2Lqnkr+9vo03Vu1rG5swemgu750ziotnDiczXZccREQ606OEwczO6OgBU865F4EXzexhoCuTO4kHzR01m0fX/j2pBz8651iz5QiPv7SZNVuPAOGxCeedVcy1F45l8uiBOpsgItINPT3DsNLMHgT+0zl3NHplpOxd5ZIcctNz2g1+XMzHpl6T6JC6LBRyvLX+IH9+aTNb9lQCkJEW4IrZI7nmgjEMGZiZ2ABFRJJUTxOGc4D/BraY2V3AL51z7342rySt44MfF/Hhye/1/OBH5xxLNxzi4ec2smP/MQBys1K59qIxXH3+GN3pICJymnr6LIm1wDwz+wDwI+CLZvY159yCWAYniTNl8ASKsgs5WFPm6cGPzjlWbi7jj89tZPPuSgAG5qbzkUvGc9m5I0hP1Z3DIiKxcFq/TZ1zfzWzZ4GvAo+a2SLg/3Y0vkGSi5kxb+yFPLz6SRZsWejJhGH7vip++/Q6Vm8Jj1EYkJ3GRy8dz5VzRpGa4u0zIiIiySYWf35lAsuB3wM3AWvM7FfAdzQnQ3K7ZMx5/HndM6w99A57qw4wPK840SEBUF5Vzx8WbOTlZXtwDrIzUvjwJeO55vzRpKfpjIKISDz09C6JW4BZkddYoAlYBdwfef80sMHMPuSceysWgUrvy07N4qJR5/LCttd5dssr3FD6yYTG09Qc5KmFW/nzy1tobAoS8BtXnz+Gj182gZzM1ITGJiLS1/X0z7GvAUuAB4A3geXOuaZ26x8ys28AvwWmnF6IkkjvnfAeXtj2Oq/tfJNPnvl+stOyEhLHincO86un1nDgSC0Qvj3yc1dPZuig7ITEIyLS3/R00GNX5lj4HfCDnvQv3jE8t5hpRZNYfXAjL21fxPsnXd6r2y87Ws///G0tS9YeAMLTN3/xQ2dx5rhBvRqHiEh/F88LvmXAJXHsX3rJe8dfwuqDG3lu60KumXhpr9xiGQo5nn9rF797ej31jS2kp/r5l8vP4NqLxhDw++K+fREROVHcEgbnnANe7W47M7sW+A5QD/iBm51zy05S9zrgm8DBqFVzgE84556K1KskPLaivQecc491N77+aHrxZIpzBnOg+jBL961mdsnMuG7vwJFafv74KtZuC9/9MHtqETd+8CwGDdADoUREEsVTQ8rN7GzgEeAc59wGM7sGeN7MpjjnopOCVvc45+a362MM4bs2nmtXZ5Vzbm6cwu7zfObjvePfw29XPMaCLa/ELWEIhRzPLNrO7/+xkabmIHnZqfz7h87i/LOGahpnEZEE81TCANwOPO+c2wDgnHvGzA4Rvl3zOx3U/2sHZZ8DHnXO1cctyn7o4lGz+dPav7GxbCs7ju5hdH5sHxVScayB+x9dyYpNh8PbmzGcL3xgKnnZaTHdjoiI9IzXLgbPA6IvPywFLuuosnOu0jlX2bps4T9DP0v47gyJoYyUdN4z+jwAnt70Ykz7fmvdAb7841dYsekwOZmpfOu6Wdz66bOVLIiIeIhnEgYzGwjkAQeiVh0ExnSxm/cANc65pVHlRWb2mJm9ZmYvmtmXzExTAXbT1RMuwWc+Fu9exuHa8tPur6k5yANPrObu373Nsdompk8o5Oe3zmXOmUNjEK2IiMSSZxIGoPUG/8ao8kbCs0l2xXXAbzoo3wrc4Zy7CLge+Arws446MLMbzGyZmS0rKyvr4mb7h8KsAi4YMYuQC/H0Oy+cVl+HKur4xv97nWcX7yTg9/Fv107lri/MoSBPAxtFRLzISwlDbeQ9+jx0GlDXWWMzywHeBzwcvc45d41zbkvk807gXsIPzBrYQd0HnXOlzrnSwsLC7u1BP3DtGeGrQy/vWExVw7Ee9bFs4yFu+elCtu6tYvDATH705Qv5wMVj8fk0sFFExKs8kzA45yqASqAoalURsK0LXXwMeMk5d6QLdbcBRtcvdUjEiAHDOHvomTQHm1mw5ZVutQ2FHA8/t5G7/vdNauqbmTV5CPd/9WLGlQyIT7AiIhIznkkYIl4ESqPKSiPlnbmODi5HmNmlkbkd2hsWed/d3QAFPjjpSgCe3/Iqdc1duxmlobGFex5aymMvbMZn8Jn3TuKOz59Ltp4BISKSFLyWMNwDXGFmkwDM7CqgGPhFZPluM1tnZuntG5nZOGAU8HwHfZYAt5lZZqRuHuHHcT/hnDscrx3pyyYMGsOkwvHUNtfz4rbXO61fdrSeb/y/N1iy9gBZ6QH+4wtz+Ni8CboEISKSRDw1D4NzbrmZfYrww6taZ3q8ot2kTemEB0BGf9NcBzzknAt10O1LwEzgFTNrAHKAl4G74rAL/cYHJl3OxrItPLPpJa4c/x5S/Skd1tu8+yh3//YtjlY3Ujwoi+/867mUDMnp5WhFROR0WXgGZ+lIaWmpW7asw1mp+z3nHF9//vvsqtrHDaWfZN7YC99V5611B/jhH5bR1BLirHGD+ObnZukx1CIi3nbSU79euyQhScLM+MDkKwB4auPztARbTlj//Ju7+MH8t2lqCXH5uSO564Y5ShZERJKYEgbpsTnDz2ZYbhFlteW8smMJED7z8NgLm/h/f15FyMG/XD6RL310mp4wKSKS5PRbXHrM5/Px0SnXAPDkhgU0Njfx4FNrefi5dzCD//Phs/jkFWfowVEiIn2ApwY9SvKZXTKDERuGsbtqH3c+8RgbluYS8Pu49dNnc/5ZmuJZRKSv0BkGOS0+8/GRyVcBsL15OWlp8J9fmK1kQUSkj1HCIKclGAzx2qtBQrW5WGojV15jTBuvKbVFRPoaJQzSYy3BED/643JeX7Uf3+GJALx1+A0aWqKfHyYiIslOCYP0SDDk+O8/rWDR6v1kpge46xPvZ+zAkVQ1VvPPra8mOjwREYkxJQzSbc45fv3kGl5buY+MND/fu/E8Jo0q4ONT3weE52WoaartpBcREUkmShik237/jw0sWLKTlICP7/zrbCaMyAdgWtFkpgyeQG1THU9teC7BUYqISCwpYZBu+fNLm3nila34fcY3PzeLM8cNaltnZnxm2ocBWLBlIYdruvKkcRERSQZKGKTLnn9zJw89uxEz+Oq/zOScyUXvqjNm4AguHHkOLaEW/rT2bwmIUkRE4kEJg3TJincO88sn1gDwxQ+dxcUzh5+07ifOvJYUX4BFu5extXxnL0UoIiLxpIRBOrVjfxX3PLSUUMjx0UvH897zRp+yfmFWAVdNuASAP6x+Ej0RVUQk+SlhkFMqr6rnrv99k/rGFi6aPoxPXzmpS+0+OOlKclKz2Fi2heX718Q5ShERiTclDHJSdQ3N3PW/b1Je1cDk0QO5+RMz8Pm69iCpzNQMPjwlPGX0H1Y9SXOwOZ6hiohInClhkA6FQo6fPrKCHfuPMXRQFt/+/Lmkpvi71cflYy9iWE4RB2oO84/NL8cpUhER6Q1KGKRDj724mbfWHyQrI4X/+MJscrNSu91HwB/g8zM/BsAT65/lSF1FrMMUEZFeooRB3uXtDQd55Pl3MIPbPn02Qwdl97ivs4omMXv4TBqDTTy06okYRikiIr1JCYOcYO/han7yx+UAfOa9kzj7jCGn3ednZ3yYNH8qb+5ZwZqDG0+7PxER6X1KGKRNXUMz3//d29Q1tHD+WUP5yCXjY9LvoMyBbQMgf7viMVqCLTHpV0REeo8SBgHCD5T62WOr2Hu4hhFFOdz8iRmYde2OiK64ZsKlFOcMZn/1IQ2AFBFJQkoYBIDnluxk0Zr9ZKQF+PZ155CRFohp/wF/gH+d+XEA/rL+H3rOhIhIklHCIOzYX8X//G0dAF/+6HSGFvZ8kOOpTCuazHklZ9MYbOLBZY9oBkgRkSSihKGfa2hs4Yd/WEZzS4jLzx3JhTOGxXV7n5/5MbJTs1hzaCMLdyyJ67ZERCR2PJcwmNm1ZrbUzF4zs0VmVtpJ/XfMbGHU6+aoOrlmNj/S7wozu9fMYnvOPUn96qk1beMWvvCBqXHfXl56LtfN+CgAD636C0frq+K+TREROX2eShjM7GzgEeBzzrmLgP8Cnjezdz9H+biDzrm5Ua/7o+rMB/zOuVnAbOBC4Ltx2IWksnD5Hl5auofUFD9f/0wp6am9k0NdOPIcZhRPpba5nt+seLRXtikiIqfHUwkDcDvwvHNuA4Bz7hngEHBTTzs0s6nAB4EfRvpsAu4DbjGz+FysTwJlR+t54MnwQ6Fu+MBURhbl9tq2zYwvlP4L6YE03t67ijf3rOi1bYuISM94LWGYByyLKlsKXHaafTYA66L6zAAuOI1+k1b4FsqV1DW0cO6UIi4/d2SvxzAocyCfnvZBAH6z/FGONVT3egwiItJ1nkkYzGwgkAcciFp1EBhziqZZZvbbyJiHhWZ2h5mlt1s/BjjkThySf7Ddun5nwZKdrNpSRk5mKjd9dFpM51vojnljL2Ry4XiqGqv59bI/6q4JEREP80zCAGRF3hujyhuBzFO02wQ8EBnz8BHgKuAvUf121Ccd9WtmN5jZMjNbVlZW1tXYk8aBI7X89un1ANz0kWnk56R30iJ+fObjpnM/R0ZKOkv3reaVHYsTFouIiJyalxKG2sh7WlR5GlB3skbOuU8755ZGPh8BvgNcbWbT2/XbUZ901K9z7kHnXKlzrrSwsLB7e+BxwZDjvkdX0NgU5KIZwzh/2tBEh0RhVgHXz/wXAH638s8crD6c4IhERKQjnkkYnHMVQCUQfUdEEbCtG1211h0Xed8ODLYTz7sXRdXtF/7+2jY27KggPyeNf//QWYkOp80FI2dx3ohSGlsa+fmbvyMYCiY6JBERieKZhCHiRSB63oXSSPm7mNmZZnZ9VHHrzEO7I+8vEB7gOCWqz3pg0WlFm0QOltfy8ILwkyK//LHp5GSmJjii48yM68/+BAUZ+Wyp2MmTGxYkOiQREYnitYThHuAKM5sEYGZXAcXALyLLd5vZunaDGguAr5tZQWR9GuFbM98ClgM459YDTwG3ReqkADcD9znnanprxxLJOccv/7KappYQc88ezqzJp5rWIjGyU7O46dzPYRhPbFjAhsNbEh2SiIi046mEwTm3HPgU8JCZvQZ8G7jCOdd6V0M64YGKrZcX1hAe4PismS0kfMbgIHCtc679ee3rAMxsKeFkYjFwZ1x3xkNeXbmPlZvLyMlM4d/eF//ZHHtq6pCJvH/S5YRciPuX/IbKhmOJDklERCJMt7KdXGlpqVu2LHpaiORSXdfE/7n3ZSprGvnKx6ZzWQLmXOiOYCjIdxfez8ayLUwdPJE7Lv4KPp+n8loRkb7spPfZ6zdxHzf/mQ1U1jQyZUwB884ZkehwOuX3+bllzr+Rl5bDusObeHz9M4kOSUREUMLQp63fXs4/39pFwG/c9JHETdDUXfkZedw8598wM57csIBVB9YnOiQRkX5PCUMf1RIM8Yu/rALgI5dMoGRITmID6qapQyby8anvA+Bnb/6Ow7XlCY5IRKR/U8LQRz27aAd7DtVQPCiLj146PtHh9MgHJl3BjOKp1DTV8sPXH6ChuSHRIYmI9FtKGPqgqppGHnn+HQCuv3YqqSn+BEfUMz7z8ZXZn2dozhB2V+3jZ2/NJ+RCiQ5LRKRfUsLQB/3xuXeobWhhxoRCZk0ekuhwTktWaiZfv/CLZKVksGzfah5b+3SiQxIR6ZeUMPQxO/ZX8fybO/H5jOvfPzVpBjqeytCcIXz1vC/gMx9PbXyON3a9neiQRET6HSUMfYhzjv/56zpCDq4+fzQjinITHVLMnFU0ietmfBSAB97+A5uPbE9wRCIi/YsShj5k8doDrN12hJzMVD55+cREhxNzV4y7mHljL6Q51MK9r/+S/ccOdt5IRERiQglDH9HUHOS3T4fnK/j0e88g20MPl4oVM+PfZn6cmUPPpLqplu+/+nMq6isTHZaISL+ghKGPeHbxTg5X1DGyKIcrPD798+lonQly/MBRlNVV8F+v/YK6pvpEhyUi0ucpYegD6hqaefzFzQB89urJ+P19+7CmB9L4xkU3UZwzmF2Ve/nxol/THGxOdFgiIn1a3/5m6SeeWriN6romJo0ayKxJyX0bZVflpmXz7Yu/woD0XNYd3sR9S35DSyjYeUMREekRJQxJ7mh1A399dSsAn7t6cp+4jbKrBmcV8K2LvkxWaiZL963m52/+jqCSBhGRuFDCkOQef3EzDU1BZk0ewpQxBYkOp9eNyh/Oty/6Mhkp6SzZs5xfvv0QoZBmgxQRiTUlDEnsYHktzy3ZiRl89qrJiQ4nYcYVjOJbF32JtEAar+96m18v+6OmkBYRiTElDEnsj8+/Q0vQ8Z6zSxhV3HcmaeqJiYPGcvuFN5HqT+GVHYt5cOkfdaZBRCSGlDAkqV0Hj/Hqir0E/D4+ecUZiQ7HEyYPHs83Lvw/pPpTeHnHYn721u80EFJEJEaUMCSpx1/YjHNw+bkjGDIwM9HheMaZQ87gWxd9mYxAOot3L+Mni35Nk265FBE5bUoYktCeQ9W8vnofAb/xkUsmJDocz5k8eDzfmXsz2alZLN+/lntf/wUNzQ2JDktEJKkpYUhCj78UPrsw75yRFOZnJDocTxpXMIr/fM9XyUvPZe2hTdy18D4qG44lOiwRkaSlhCHJ7C+r4bUVe/H7jI9cMj7R4XjaiAHD+O4lX2NwVgHbKnZxx4s/1AOrRER6SAlDknn8pc2EHFxSWqKxC11QnDOYu+d9nbH5IzlcW84dL/2Yd8q2JjosEZGko4QhiRwsr+WV5Xvx+YyPXqqxC101ID2X/7jkq8wceiY1TbV8b+H9LNq9NNFhiYgkFSUMSeTPL20hFHLMnTmc4kFZiQ4nqaQH0rjt/Bu5fOxFNIdauH/Jb/nj6qc0V4OISBd5LmEws2vNbKmZvWZmi8ys9BR1h5jZD8zsDTNbaGYrzex2MwtE1auMrG//+nj89yZ2Dh+t46Wlu/EZfGyezi70hN/n59/O/gTXzfgoPvPxt3f+yb1v/JLaprpEhyYi4nmBzqv0HjM7G3gEOMc5t8HMrgGeN7MpzrmORqt9FLgCmOucqzazEmAFkAHc2a7eKufc3DiHH1d/f207wZDjohnDGFaYnehwkpaZcdWESxiRN4z/Xvw/rDywnm+9cC+3XfDvDM8rTnR4IiKe5bUzDLcDzzvnNgA4554BDgE3naT+YeBHzrnqSP09wOPAp3oh1l5TU9/MP9/aCcCH5o5LbDB9xNQhE/mvy29n5IDhHKg5zO0v3MOrO95MdFgiIp7ltYRhHrAsqmwpcFlHlZ1zjzvnHo0qrgfS4hBbwjy3ZCf1jUGmjR/E2OEDEh1OnzE4q4C7L72NC0eeQ2OwiV+8/Xt++dZDNLQ0Jjo0ERHP8UzCYGYDgTzgQNSqg8CYbnQ1h/BZhvaKzOyxyLiIF83sS2bmP41we01zS4inX98GwAd1diHm0gKpfOnc6/j3WZ8h1Z/Cwp1LuP2Fe9hduS/RoYmIeIpnEgagddh/9J93jUCXJhwws3nACOC7Uau2Anc45y4Crge+AvzsJH3cYGbLzGxZWVlZV2OPm9dW7qXiWCMji3KYOXFwosPpk8yMS8acxw/mfYNhuUXsO3aQ21+4h2c2vaTHZIuIRHgpYaiNvEdfTkgDOh3GbmYjgQeAa51zle3XOeeucc5tiXzeCdwLfDFyVoOoug8650qdc6WFhYXd3olYcs7x1MLwJEMfnDsOM0toPH3diAHD+K/Lvsklo8+jOdTCQ6v+wndfuY/DteWJDk1EJOE8kzA45yqASqAoalURsO1Ubc1sCPA34Hrn3MoubG4bYHTvUkevW7HpMLsOVjMwN52LZgxPdDj9QnogjX8/5zN8/YIvkpeWw4ayLdz23N28vH0RzrlEhycikjCeSRgiXgSi510ojZR3yMzygWeA251zr0bKbmi3/lIzuzaq2bDI++7TjjiOWs8uvO/CMaQEvHao+rbSYWfxkyu/wznDp1Pf0sCvlj7M9xbez4Hqw4kOTUQkIbz2LXQPcIWZTQIws6uAYuAXkeW7zWydmaVHlrOBBYQTijIzK41M9HRjuz5LgNvMLDPSJg/4KvCEc86zv/2376ti9ZYjZKT5uXLOqESH0y/lpufwtfNu4Mvnfp6ctGzWHd7Erc99jyc3LKAlFEx0eCIivcpTEzc555ab2aeAh8ysHvADV7SbtCmd8ADI1ov5NwPnRl7fPEm3LwEzgVfMrAHIAV4G7orPXsTGM29sB8KPsM7OSElwNP2XmXHhqHOYVjyZP6x6gld3vsmja//Oot3L+PyMjzF1yMREhygi0itM12VPrrS01C1bFj0tRPxV1zVx3V3P09QS4tffvJShmtnRM9YeeocHlz3CoZrwHTSzS2bymWkfojCrIMGRiYjExElH13vtkoQAL769m6aWEDMmFCpZ8Jgzh5zBT664g49PfR9p/lTe3LOCWxbcxePrnqGhuSHR4YmIxI0SBo8JhRzPLt4BwNXnj05wNNKR1EAqH55yFf991X9w3ohSmoPN/GX9P/jys//BP7e+qvENItInKWHwmBWbDnOwvI7B+RmUTo6+w1S8ZFDmQG6Z82/cdcn/ZdzAUVQ1HON/lz/K1xZ8lyV7lmvSJxHpUzw16FHgH4vCZxfee95o/D5N1JQMJhWO5/vzvs5be1fypzV/40DNYf578f8yMm8YH55yFecMn47PlJuLSHJTwuAhB8trWf7OIVICPi47Z0Siw5FuMDNml8ykdNg0Xt6+iCc3LGBX1T5+uvh/GJE3jA9PeS/nDp+hxEFEkpYSBg95dvFOnIMLpw8jL7tPPXCz3wj4/Fw+7iLmjp7DK9sX89eNz7O7ah//vfh/Kc4ZzPsmzuOiUbNJ9etWWRFJLrqt8hR687bKxuYgn//u81TXNfOTmy9iwoj8XtmuxFdzsJlXdizmbxv/SVldBQB5aTlcOX4ul427iNw03QUjIp5y0mvhOsPgEa+v3Ed1XTPjSwYoWehDUvwpXD7uYi4dcwFv7l3B3ze+wI7KPTy27mme3LCA80fO4spxcxkzUJegRMTblDB4xD/f2gXAezUNdJ/k9/k5f8QszispZe2hd/jH5pdYeWA9C3csYeGOJUwoGMNlYy9kdslM0gKpiQ5XRORdlDB4wJ5D1WzcWUFGmp8Lpg/rvIEkLTPjrKJJnFU0iYPVh3l+62u8smMxm8u3s7l8O79d+RgXjjiHS8acr7MOIuIpGsNwCr01huF3T6/nyYVbueycEXzl4zPivj3xloaWRhbtWsrL2xexpWJnW/nIvGFcOOoczh8xi4JMXaYSkV5x0jEMShhOoTcShpZgiM9/959U1jTyoy9fyBmjBsZ1e+Jtuyv38fKOxby28y1qmmoBMIwpgydw/ohSzhk+nRwNlBSR+FHC0BO9kTAsWXuAH8x/m5Ih2fzitksw02RNAi3BFlYeXM/rO99m+f41NIdaAPCZj6mDJzK7ZCbnDJtGbnpOgiMVkT5Gd0l41Ytv7wbgsnNGKlmQNgF/gFnDpjFr2DRqm+p4a+9KluxZztpDm1hzaCNrDm3kf5Y/wsSCMZQOO4vSYdMYmjMk0WGLSB+mMwynEO8zDBXHGvj89/6JAfPvvIIBOZqsSU6turGGpftWs2TPCtYd3kSw3YOuirMHM714CtOLJzOlcAKputtCRLpPZxi86KWluwmFHHPOLFayIF2Sk5bNJWPO55Ix51PXXM/qgxtYum8NK/ev5UDNYQ5sOcyCLa+Q4k9hcuE4pg4+gzOHTGTUgBJ8Pk1LLSI9p4QhQZxz7S5H6PY56b7MlAzmlJzNnJKzCYaCbCnfwaqD61l1YAPbj+5m9cGNrD64EYCs1EwmF45nUuF4JheOY+SA4fh9/gTvgYgkEyUMCbJ+ezn7j9QyMDedmRMHJzocSXJ+n58zCsdxRuE4PnHm+6lqOMbaQ5tYd+gd1h7eRFltOUv3rWbpvtUAZATSmTBoNBMKxjBh0BjGDxxNZmpGgvdCRLxMCUOCvLR0DwCXzirB79epYomtvPRcLhg5iwtGzgLgUE0ZGw5vYWPZVjYe2cqhmrITzkAYxrDcIsYNHMWYgSMYO3AkIwcM10OyRKSNEoYEaGoOsnjtfgAuKS1JcDTSHwzJLmRIdiHvGXMeABX1lWw6so3NR3awuXw7O47uYe+xA+w9doCFO5cA4Dcfw3OLGZk/nFEDShidX8KIvKGaB0Kkn1LCkABLNxyirqGFccPzGD5Y99FL7xuYMaBt/ANAU7CZnUf3sP3obrZV7GJ7xS72Vh9kV9U+dlXt4zXeamubn55HSd5QRuQNZXheMcNyixiWW0R2alaidkdEeoEShgRYuCJ8OeLimTq7IN6Q6k9hwqDweIZWDS2N7K7cx87Kvew8uoedlXvZU7Wfow1VHG2oYs2hjSf0kZeey9CcIRTnDGZozmCKc4ZQlF3IkKxBusVTpA9QwtDLquuaWLbxMD6Di2boQVPiXemBtHclESEXoqy2nN1V+9lTtZ+9xw6yr+oA+6oPUtVwjKqGY2ws2/KuvvIz8ijKLmRw1iAGZxVQmFXQ9p6fMYCA7tgQ8TwlDL1s0er9tARDTB9fyMDc9ESHI9ItPvO1jYeYNWxaW3nIhThSd5QD1Yc4UH048jrEwZoyymrLOVpfxdH6KjaWbX1Xn2ZGfnoegzIHUpCZT0HGAAZmDmBgRj4DMwaQn5FLfnqezlKIJJgShl62cMVeAC6eOTzBkYjEjs98DI6cNZhWNPmEdcFQkPK6oxysKeNwbTll7V6H68qprD9GRX0lFfWVUH7ybWSlZDAgI48B6bnkpeWQl54b/pyeQ25aDrlp2eSl55CTlk1GIF1TrYvEmOcSBjO7FvgOUA/4gZudcyedn9nMcoGfAVMi9V8Avu2ca2lXpxj4FTAYSAMecc79OG47cRKHj9axfns5qQEf551V3NubF0kIv8/P4OxBDM4e1OH6llCQivpKyusqOFJ7tC15KK8/ytG6So42HONoQxW1zfXUNtez79jBLm0zNzWb7LQsclKzyE7LIju19ZVJVkomWamZZKdmkpmSQVZqJlkpGWSmZBDwe+7XoogneOonw8zOBh4BznHObTCza4DnzWyKc+5kvyXmA7XOuVlmlgosBL4LfCvSpw94GljgnPuOmeUBK8zsmHPuwTjv0gleW7kPgHOmFJGZrvvbRQACPn/b2QkKO64TciFqmuqorK+isuEYlQ3HqGqoprKhimONNeFXQzXHGqs51lRLY0tj2+DM7krxp5CZkkFmIJ2MlMgrcPw9PSWd9EAaGYE00gNppKekkeZPIz2QSlqkLM2fSmoglXR/Kqn+VE3LLX2CpxIG4HbgeefcBgDn3DNmdgi4ifBZhxOY2VTgg8BZkfpNZnYfMN/MfuCcqwGuAqYD8yJ1qszs18AdZvY/rhefvvVq5HLEXF2OEOkWn/nITcsmNy2bEXQ+WLgp2ExNYy3HGmuoaapte1U31lLbXEdNUx21ra/mOuqaG6hrqqO2uZ7mYDNVwWaqOBaz+FN8AVL9KaQGUsPJhD+VFH+AVH9quNyfQoo/hVRfCin+ACm+ACn+1s/h94DveHnAF4iU+dvK/ZHPrWV+n5+A+Qn4/Pgjr4CF33W5RnrCawnDPODeqLKlwGV0kDBE6jcA66LqZwAXAM9F6mxzzlVG1SkBJgLvxCLwzuw8cIydB46Rk5nCzDP0GGKReEr1p4QHTmYO6FY75xxNwWbqmuupb64PJxLN9TS0NFLf3EB9SwMNLY00tDTQ0NwYLm9ppLGlkcZgEw0tjTS2NLUtN7Y00RhsojnUQnOohdrm+vjscDf5zNeWQPh8vqh3P37z4Tffuz77Wj+bD7/Ph7V+jrz7zCLv7V8nllnbsmFYh2UnWz7+ubU8XKd1n8Jl4YG0hi/8OdLm+DuARdpF6rerC5yiXvRn2vqObtfx8vF20W1pjfX4yhOXWzuI9Ha8nTEwPa9XLqV5JmEws4FAHnAgatVB4L0naTYGOBR1luBgu3Wt7x312bquVxKGhcvDcy+cP20YKQGdnhTxIjMjLZBKWiCV/Iy8mPTpnKM52ExTsJnGYBNNwWaa2t7Dn5uDLTQFm9vqNYdaaI56bwm2tCUeLZHlltblYAstLkhLKBheFwoSjLxaQuF1rctBFyLkQoSCIZppjsk+SmL96IpvM3JA/M9ceyZhAFqniWuMKm8EMk/RpqP6tGvTlTptzOwG4AaAESNi9xTJyppGfKbLESL9jZmRGgiPacgm8bNhOufaEofw+/FEIuhChEJBWlyQUCicWLTWC7n2y5GkwwUJOUfQRdaHXFsd50KEnGtrF3IhHK3L4XfnXLuyEM5xfDkUwkG4n0gZDkI4XGv7yGfnHCEctH+P9N2+Tvg/wLUrD/+rEHIOcG0xtP5btcZwvF1k/QmfadtWpOkJ2wovH+/3hLaRle2ia7d8woE7sd92Zb315FkvJQy1kfe0qPI0oO4UbTqqT7s2tUBuJ3XaRAZCPghQWloas/ENt3xiJp+9ajIDsqPDFRHpPWZGwB/w1C9/SQ6eOTfunKsAKoGiqFVFwLaTNNsODLYTR/C0tt/Wrk5Hfbav0ysG5qbj82mwkYiIJB/PJAwRLwKlUWWlkfKOvEB4gOOUqPr1wKJ2dcaZ2YCoOnucc5tON2AREZH+wGsJwz3AFWY2CcDMrgKKgV9Elu82s3Vmlg7gnFsPPAXcFlmfAtwM3Be5pRJgAbAK+GqkTi7hMQp399I+iYiIJD1PXcZyzi03s08BD5lZ60yPV7SbtCmd8EDF9uf1rwN+bmZLI/VfBO5s12coMnvkr8xsSaSPB3t70iYREZFkZr04b1HSKS0tdcuWnXRWahERkb7mpAPtvHZJQkRERDxICYOIiIh0SgmDiIiIdEoJg4iIiHRKCYOIiIh0SgmDiIiIdEoJg4iIiHRKCYOIiIh0ShM3nYKZlQG7YtjlIOBIDPtLJO2LN/WVfekr+wHaFy/qK/sBsd+XI865KztaoYShF5nZMudc9MO1kpL2xZv6yr70lf0A7YsX9ZX9gN7dF12SEBERkU4pYRAREZFOKWHoXX3pCZnaF2/qK/vSV/YDtC9e1Ff2A3pxXzSGQURERDqlMwwiIiLSqUCiA+hLzOxa4DtAPeAHbnbOLTtF/VzgZ8CUSP0XgG8751p6IdxT6sG+vAMcjCp+yjl3f/yi7JyZpQLfBW4FxjnndnZS38vHpLv74rljYmbXAP8HSAOygKPAN5xzazpp57njchr74sXjchFwCzCQ8L/vAOB/TxWTmaUA9wIXAw5YCdzinKuNd7yniKkn+7Gwg+Ilzrnb4xBij5jZl4CfA+9xzi08Rb34/pw45/SKwQs4G6gBJkeWrwHKgaJTtHkS+EPkcyqwGPhBku7LwkTH3UFMo4AlwO8J/0Ib1YU2Xj0mPdkXLx6TI8An2y3fA5QBQ5LtuJzGvnjxuPwKuLPd8jQgCFxzijY/BV4h/IenAX8GHknC/fDc8YiKbyjh+YAcMLeTunH9OUn4P0ZfeQF/AZ6IKtsAfO8k9adG/gc4s13Zx4A6IDuZ9iWyfmGij8FJ/o3HAXO78iXr8WPSrX3x8DF5Mmq5MLI/n0m249KTffHwcZkM5ESVlRM+Y9BR/XygCXhfu7JzIvs/Lln2w6vHIyq+J4AbO0sYeuPnRGMYYmceEH3Kfilw2SnqNwDroupnABfEPLru6e6+eJJzbp1zbms3mnj2mPRgXzzJOfehqKL6yHvaKZp58rj0cF88yTm3wTlXDWBmPjP7AtBI+KxBRy4GUjjx98RKwn/Nz4tnrKfSg/3wNDN7H9AMPN+F6nH/OdEYhhgws4FAHnAgatVB4L0naTYGOOQiaWC7+q3rEqKH+wKQZWa/JfxXcAh4Efixc64hLoHGhyePyWlIhmMyh/Avub+fok6yHJeu7At4+LiY2R3Al4AK4Crn3L6TVB1D+K/ZtrEYzrlmMyvHA8ekG/vRWv9+YAbhSytvAnc756riHuipY8oCvg9cQdeS0Lj/nOgMQ2xkRd4bo8obgcxTtOmoPqdo0xt6si8Am4AHnHMXAR8BriJ8aSOZePWY9JSnj4mZGeGBtXc45w6foqrnj0s39gU8fFycc3cDxYS/qF41s/NOUjULaI76coLOf0/0im7sB8BqYEHkeFxJOJFbGBnUmUjfA37lnIv+4+1k4v5zooQhNlpHBUdngWmErx+drE1H9TlFm97Qk33BOfdp59zSyOcjhH95Xm1m0+MRZJx49Zj0SBIckx8Au5xzP+mkXjIcl67ui+ePiwv7I/Aa4YGcHakFUiKJUnun/D3Rm7q4HzjnbnbOPRf5XEv4LqTpwNW9EWdHzGwmcC7hQZxdFfefEyUMMeCcqwAqgaKoVUXAtpM02w4MjvqBa21/sjZx18N96Uhr3XExCKu3ePKYxJBnjomZ3UJ4gNrnu1Dd08elm/vSkYQfl8gtu9E2EL49ryPbCZ++H9KujwBQQAKPSQ/2oyM7iAzejElQPXM14bEHL0du+3w0Un6fmS00s4kdtIn7z4kShth5EYh+YlhppLwjLxD+H6L9/8ilhAdOLYp5dN3TrX0xszPN7Pqo4mGR990xji2evHxMusXLxyQS11XAx5xzLWY2xsxONVDOs8elu/vi4eOyvIOzBUOBk137f5XwXRLtf0/MIHzv/8l+5/WGbu2HmQ02s29HFRcTToYSdjycc99zzs10zs11zs0FPhFZdUukbFMHzeL/c5LoW0b6yovw3AXVwKTI8lWEB9wURZbvJjx6Nb1dmyeB30c+pwBv4I17/ru1L4Rv9dsMFESW04BnCA8e8ntgf+bSwa2IyXRMursvXj0mhH/x7SA8yr408roR+M9kOy492RcPH5edwJfbLZ9N+Ivm5sjyjYTnAihuV+enwEscn4fhMRI/D0O39oPw/CblrT9PhP+I/nXkuCb0Vuqo/RpF1G2Vifg50V0SMeKcW25mnwIeMrPW2RGvcM61jlJNJzzwpH32ex3wczNbyvHM/M7ei7pjPdiXNYQHbT0bqZ8NrAL+1TkX7NXg24mcnvwn4dneAB41s/3u+O1wSXNMerAvnjwmwB8If8EsjCq/q93nZDkuPdkXrx6XbwHXm9knCd8amQF8DXggsj41UuZv1+abhGd6fIvwl9kq4OZeivdkursfB4GfAH8yswbCAwd3AZc652p6M/CTMbP7gNmRxfvMbItz7qMk4OdED58SERGRTmkMg4iIiHRKCYOIiIh0SgmDiIiIdEoJg4iIiHRKCYOIiIh0SgmDiIiIdEoJg4iIiHRKCYOIiIh0SgmDiHiOmX3fzH6W6DhE5DglDCLSa8zsR2b2fBeqXg08G+94RKTrlDCISG86B3j7VBXMbCjhRwsv7I2ARKRr9CwJEYm7yMOzagg/Qa/VRufc5A7qXg98wDl3zSn6+yTw1Uif6cBC59ztsY1aRNpTwiAicWdmPmAGsAw4F9gNNDrnjnZQ90ngBefcA9HrIuuHRtpPcM5tN7NC4B3nXEHcdkBEdElCROLPORcCioFqYKlz7uBJkoVUYB6nHr8whPCje0dF+i4Drop1zCJyIiUMItJbZgCr3alPa14I7HHO7TpFnVXAH4AXzexlM7sBWBe7MEWkI0oYRKS3TAdWdlLnKjq5O8KFfRY4E1gOfB9YZWYDYhCjiJyEEgYR6S3TgDWd1LkK+MepKpjZMDOb45xb75y7DZgCDAUujU2YItIRJQwi0lsCwBlmNrSjswFmNprwF/8bnfQzHrjXzAKRZR9gwJYYxioiUZQwiEhv+TbwCWAv8F8drL+a8N0RLZ308w6wDVhiZguBp4GbnHOdnb0QkdOg2ypFxBPM7FngL8653yY6FhF5N51hEBGvWEj4bIGIeJDOMIiIiEindIZBREREOqWEQURERDqlhEFEREQ6pYRBREREOqWEQURERDqlhEFEREQ6pYRBREREOvX/ATkvgi2C/BWHAAAAAElFTkSuQmCC
+<img src="data:image/png;base64,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
 "
 >
 </div>
@@ -13436,10 +13890,53 @@ Technische Universität Bergakademie Freiberg.</em></p>
   </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Now we want to get the same result with a generalized midpoint rule. It can be considered as a weighted average between an explicit forward Euler and an implicit backward Euler scheme. For $\alpha &gt; 0$ the update proceeds implicitly with the <em>recursive</em> update formula</p>
-<p>$y_{n+1}^{i+1} = y_n + [(1-\alpha) f(y_n) + \alpha f(y_{n+1}^i)] (t_{n+1} - t_n)$</p>
-<p>We define the corresponding Euler update as</p>
-<p>$\Delta y_\text{MP}^{i} = y_{n+1}^{i+1} - y_n = [(1-\alpha) f(y_n) + \alpha f(y_{n+1}^i)] \Delta t$</p>
+<p>The active earth pressure is found at the peak of this curve. In other words we need to identify</p>
+$$
+    \frac{\partial E_\text{a}}{\partial \vartheta} = 0
+$$<p>and</p>
+$$
+    \vartheta_\text{a} = \underset{\vartheta \in [0,\pi/2]}{\text{arg max }}E_\text{a}
+$$<p>As we saw above, this is cumbersome analytically. However, we can find the solution numerically in an iterative manner.</p>
+<p>As we have</p>
+$$
+    \left. \frac{\partial E_\text{a}}{\partial \vartheta} \right|_{\vartheta_\text{a}} = 0
+$$<p>we find for other angles the following residual:</p>
+$$
+    r(\vartheta) = \frac{\partial E_\text{a}}{\partial \vartheta} \neq 0
+$$<p>to which we seek the solution</p>
+$$
+    r(\vartheta_\text{a}) = 0
+$$<p>Since we don't want to go through the trouble to determine the first derivative of $E_\text{a}$ with respect to $\vartheta$ analytically, we do so numerically by numerical differentiation using a central finite difference scheme:</p>
+$$
+    \frac{\partial E_\text{a}}{\partial \vartheta} \approx \frac{E_\text{a}(\vartheta + \epsilon) - E_\text{a}(\vartheta - \epsilon)}{2\epsilon}
+    \quad
+    \text{with}
+    \quad \epsilon \ll 1,\ \epsilon &gt; 0
+$$
+</div>
+</div>
+</div>
+
+  
+
+  <div class="
+      cell border-box-sizing code_cell rendered">
+    <div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">dEa_dtheta</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span><span class="n">eps</span><span class="o">=</span><span class="mf">1.e-8</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">Ea</span><span class="p">(</span><span class="n">theta</span><span class="o">+</span><span class="n">eps</span><span class="p">)</span> <span class="o">-</span> <span class="n">Ea</span><span class="p">(</span><span class="n">theta</span><span class="o">-</span><span class="n">eps</span><span class="p">))</span><span class="o">/</span><span class="p">(</span><span class="mf">2.</span><span class="o">*</span><span class="n">eps</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+  </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The former function defines the slope and equals our residual:</p>
 
 </div>
 </div>
@@ -13453,8 +13950,8 @@ Technische Universität Bergakademie Freiberg.</em></p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">Mid_Point_Update</span><span class="p">(</span><span class="n">y_i</span><span class="p">,</span><span class="n">y_n</span><span class="p">,</span><span class="n">al</span><span class="p">,</span><span class="n">dt</span><span class="p">):</span>
-    <span class="k">return</span> <span class="p">((</span><span class="mf">1.</span><span class="o">-</span><span class="n">al</span><span class="p">)</span><span class="o">*</span><span class="n">dy_dt</span><span class="p">(</span><span class="n">y_n</span><span class="p">)</span> <span class="o">+</span> <span class="n">al</span><span class="o">*</span><span class="n">dy_dt</span><span class="p">(</span><span class="n">y_i</span><span class="p">))</span><span class="o">*</span><span class="n">dt</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">residual</span><span class="p">(</span><span class="n">theta</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">dEa_dtheta</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -13464,19 +13961,26 @@ Technische Universität Bergakademie Freiberg.</em></p>
   </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Again, the first step is a forward Euler step. After that, a mixture of BE and FE schemes occurs.</p>
-<p>We now need to define the time stepping itself. So we choose a time-step size and the same starting value (initial condition) of $y_0 = y(t=0) = 0$ to initialize our solution field.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Now, for every time step we append to this array the value of the next time step by applying the generalized Midpoint update rule. Each new time step value then serves as the initial condition for the following time step.</p>
-<p>We will <em>recursively</em> re-fresh the update with a new estimate for the rate until the estimated solution does not change anymore, i.e.</p>
-<p>$\left| y_{n+1}^{i+1} - y_{n+1}^{i} \right| &lt; \epsilon_\text{abs} \cup \left| \frac{y_{n+1}^{i+1} - y_{n+1}^{i}}{y_{n+1}^{i}} \right| &lt; \epsilon_\text{rel}$</p>
-<p>with suitably chosen absolute and/or relative tolerances.</p>
-<p>For simplicity, let's set only an absolute tolerance of $10^{-6}$ here.</p>
+<p>Now, we use Newton's method to find the solution to the non-linear equation $r(\vartheta) = 0$. We depart from a Taylor series expansion to first order around an initial guess $\vartheta_0$:</p>
+$$
+    r(\vartheta) \approx r(\vartheta_0) + \left. \frac{\partial r}{\partial \vartheta} \right|_{\vartheta_0} \Delta \vartheta \overset{!}{=} 0
+    \quad
+    \text{with}
+    \quad
+    \Delta \vartheta = \vartheta - \vartheta_0
+$$<p>We obtain the next guess for $\vartheta$ by rearranging:</p>
+$$
+    \vartheta = \vartheta_0 - \left( \left. \frac{\partial r}{\partial \vartheta} \right|_{\vartheta_0} \right)^{-1} r(\vartheta_0)
+$$<p>As we linearized the non-linear function, the new guess is likely still not the solution we seek. Hence, we iterate:</p>
+$$
+    \vartheta_{i+1} = \vartheta_i - \left( \left. \frac{\partial r}{\partial \vartheta} \right|_{\vartheta_i} \right)^{-1} r(\vartheta_i)
+$$<p>We terminate the solution once $\vartheta$ no longer changes, e.g. once</p>
+$$
+    | \vartheta_{i+1} - \vartheta_i | &lt; \epsilon_\text{tol}
+$$<p>Another criterion, which is more direct, is to determine when the residual is close enough to zero:</p>
+$$
+    | r(\vartheta_{i+1}) | &lt; \epsilon_\text{tol}
+$$<p>In order to code this algorithm, we need the first derivative of the residual with respect to $\vartheta$ (this is actually the second derivative of $E_a$):</p>
 
 </div>
 </div>
@@ -13490,31 +13994,8 @@ Technische Universität Bergakademie Freiberg.</em></p>
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">integrate</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span><span class="n">alpha</span><span class="p">):</span>
-    <span class="c1">#Startwerte</span>
-    <span class="n">t_end</span> <span class="o">=</span> <span class="mf">4.</span>
-    <span class="n">absolute_tolerance</span> <span class="o">=</span> <span class="mf">1.e-6</span>
-    <span class="n">max_iter</span> <span class="o">=</span> <span class="mi">1000</span>
-    <span class="n">iteration_counter</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">])</span>
-    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.</span><span class="p">])</span>
-    <span class="n">times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.</span><span class="p">])</span>
-    <span class="c1">#</span>
-    <span class="k">while</span> <span class="n">times</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">dt</span> <span class="o">&lt;</span> <span class="n">t_end</span><span class="p">:</span> <span class="c1">#repeat the loop as long as the final time step is below the end point</span>
-        <span class="n">times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">times</span><span class="p">,</span><span class="n">times</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">dt</span><span class="p">)</span> <span class="c1">#here define the next time point as the previous time point plus the time increment dt</span>
-        <span class="n">y_old</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="c1">#Starting value for recursive update</span>
-        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="c1">#</span>
-        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-            <span class="n">y_new</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">Mid_Point_Update</span><span class="p">(</span><span class="n">y_old</span><span class="p">,</span><span class="n">y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="n">alpha</span><span class="p">,</span><span class="n">dt</span><span class="p">)</span> <span class="c1">#one backward Euler step</span>
-            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
-            <span class="c1">#if change is below tolerance, above maximum iterations, or scheme is fully explicit, stop iterations</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">y_new</span> <span class="o">-</span> <span class="n">y_old</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">absolute_tolerance</span> <span class="ow">or</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="n">max_iter</span> <span class="ow">or</span> <span class="n">alpha</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">):</span> 
-                <span class="k">break</span>
-            <span class="n">y_old</span> <span class="o">=</span> <span class="n">y_new</span> <span class="c1">#preparation of next recursion</span>
-
-        <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y</span><span class="p">,</span><span class="n">y_new</span><span class="p">)</span> <span class="c1">#append the new found solution to the solution vector</span>
-        <span class="n">iteration_counter</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">iteration_counter</span><span class="p">,</span><span class="n">i</span><span class="p">)</span> <span class="c1">#store how much iterations this time step took to converge</span>
-    <span class="k">return</span> <span class="n">times</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">iteration_counter</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">dr_dtheta</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span><span class="n">eps</span><span class="o">=</span><span class="mf">1.e-8</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">residual</span><span class="p">(</span><span class="n">theta</span><span class="o">+</span><span class="n">eps</span><span class="p">)</span> <span class="o">-</span> <span class="n">residual</span><span class="p">(</span><span class="n">theta</span><span class="o">-</span><span class="n">eps</span><span class="p">))</span><span class="o">/</span><span class="p">(</span><span class="mf">2.</span><span class="o">*</span><span class="n">eps</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -13522,6 +14003,342 @@ Technische Universität Bergakademie Freiberg.</em></p>
 </div>
 
   </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We now code the algorithm and give it a starting guess $\vartheta_0$ and a termination tolerance $\epsilon_\text{tol}$:</p>
+
+</div>
+</div>
+</div>
+
+  
+
+  <div class="
+      cell border-box-sizing code_cell rendered">
+    <div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">find_theta</span><span class="p">(</span><span class="n">theta_0</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">6</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1.e-5</span><span class="p">):</span>
+    <span class="n">theta</span> <span class="o">=</span> <span class="n">theta_0</span>
+    <span class="n">iteration_counter</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">residual</span><span class="p">(</span><span class="n">theta</span><span class="p">))</span> <span class="o">&gt;</span> <span class="n">tol</span> <span class="ow">and</span> <span class="n">iteration_counter</span> <span class="o">&lt;</span> <span class="mi">100</span><span class="p">):</span>
+        <span class="n">theta</span> <span class="o">-=</span> <span class="n">residual</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span> <span class="o">/</span> <span class="n">dr_dtheta</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+        <span class="n">iteration_counter</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">theta</span><span class="p">,</span> <span class="n">iteration_counter</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+  </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Running this algorithm will give us the solution we seek.</p>
+
+</div>
+</div>
+</div>
+
+  
+
+  <div class="
+      cell border-box-sizing code_cell rendered">
+    <div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">theta_a</span><span class="p">,</span> <span class="n">it</span> <span class="o">=</span> <span class="n">find_theta</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+  </div>
+
+  
+
+  <div class="
+      cell border-box-sizing code_cell rendered">
+    <div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The slip angle of </span><span class="si">%.2f</span><span class="s2"> ° was found after </span><span class="si">%i</span><span class="s2"> iterations. The corresponding earth pressure is </span><span class="si">%.2f</span><span class="s2"> MN/m.&quot;</span> 
+      <span class="o">%</span><span class="p">(</span><span class="n">theta_a</span><span class="o">*</span><span class="mi">180</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span><span class="n">it</span><span class="p">,</span><span class="n">Ea</span><span class="p">(</span><span class="n">theta_a</span><span class="p">)</span><span class="o">/</span><span class="mf">1.e6</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>The slip angle of 66.35 ° was found after 100 iterations. The corresponding earth pressure is -0.03 MN/m.
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+  </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The result was found after several iterations. We may lower this number by improving our starting guess. For example, we could use the classical solution</p>
+$$
+    \vartheta_0 = \frac{\pi}{4} + \frac{\varphi}{2}
+$$
+</div>
+</div>
+</div>
+
+  
+
+  <div class="
+      cell border-box-sizing code_cell rendered">
+    <div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">theta_a</span><span class="p">,</span> <span class="n">it</span> <span class="o">=</span> <span class="n">find_theta</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">4</span> <span class="o">+</span> <span class="n">phi</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The slip angle of </span><span class="si">%.2f</span><span class="s2"> ° was found after </span><span class="si">%i</span><span class="s2"> iterations. The corresponding earth pressure is </span><span class="si">%.2f</span><span class="s2"> MN/m.&quot;</span> 
+      <span class="o">%</span><span class="p">(</span><span class="n">theta_a</span><span class="o">*</span><span class="mi">180</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span><span class="n">it</span><span class="p">,</span><span class="n">Ea</span><span class="p">(</span><span class="n">theta_a</span><span class="p">)</span><span class="o">/</span><span class="mf">1.e6</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>The slip angle of 66.35 ° was found after 100 iterations. The corresponding earth pressure is -0.03 MN/m.
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+  </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We arrive at the same result, albeit in fewer iterations. We can check this result gravarphically:</p>
+
+</div>
+</div>
+</div>
+
+  
+
+  <div class="
+      cell border-box-sizing code_cell rendered">
+    <div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">thetas</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">6</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="mf">0.9</span><span class="p">,</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">thetas</span><span class="o">*</span><span class="mi">180</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span><span class="n">Ea</span><span class="p">(</span><span class="n">thetas</span><span class="p">)</span><span class="o">/</span><span class="mf">1e6</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">theta_a</span><span class="o">*</span><span class="mi">180</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span><span class="n">Ea</span><span class="p">(</span><span class="n">theta_a</span><span class="p">)</span><span class="o">/</span><span class="mf">1e6</span><span class="p">,</span><span class="n">marker</span><span class="o">=</span><span class="s1">&#39;d&#39;</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;$</span><span class="se">\\</span><span class="s1">vartheta$ / °&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;$E_</span><span class="se">\\</span><span class="s1">mathrm</span><span class="si">{a}</span><span class="s1">$ / MN m$^{-1}$&#39;</span><span class="p">);</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    
+
+
+
+<div class="output_png output_subarea ">
+<img src="data:image/png;base64,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
+"
+>
+</div>
+
+</div>
+
+</div>
+</div>
+
+  </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>If we choose an initial guess that's outside of the convergence region for the newton scheme, we may not converge at all or to the wrong solution:</p>
+
+</div>
+</div>
+</div>
+
+  
+
+  <div class="
+      cell border-box-sizing code_cell rendered">
+    <div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">theta_a</span><span class="p">,</span> <span class="n">it</span> <span class="o">=</span> <span class="n">find_theta</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The slip angle of </span><span class="si">%.2f</span><span class="s2"> ° was found after </span><span class="si">%i</span><span class="s2"> iterations. The corresponding earth pressure is </span><span class="si">%.2f</span><span class="s2"> MN/m.&quot;</span> 
+      <span class="o">%</span><span class="p">(</span><span class="n">theta_a</span><span class="o">*</span><span class="mi">180</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span><span class="n">it</span><span class="p">,</span><span class="n">Ea</span><span class="p">(</span><span class="n">theta_a</span><span class="p">)</span><span class="o">/</span><span class="mf">1.e6</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>The slip angle of 66.35 ° was found after 100 iterations. The corresponding earth pressure is -0.03 MN/m.
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+  </div>
+
+  
+
+  <div class="
+      cell border-box-sizing code_cell rendered">
+    <div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">theta_a</span><span class="p">,</span> <span class="n">it</span> <span class="o">=</span> <span class="n">find_theta</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">10</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The slip angle of </span><span class="si">%.2f</span><span class="s2"> ° was found after </span><span class="si">%i</span><span class="s2"> iterations. The corresponding earth pressure is </span><span class="si">%.2f</span><span class="s2"> MN/m.&quot;</span> 
+      <span class="o">%</span><span class="p">(</span><span class="n">theta_a</span><span class="o">*</span><span class="mi">180</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span><span class="n">it</span><span class="p">,</span><span class="n">Ea</span><span class="p">(</span><span class="n">theta_a</span><span class="p">)</span><span class="o">/</span><span class="mf">1.e6</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>The slip angle of -113.65 ° was found after 100 iterations. The corresponding earth pressure is -0.03 MN/m.
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+  </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We can also compare this result to the one from DIN4085, for example:</p>
+$$
+    \vartheta_\text{ag} = \varphi + \text{arctan} \left[ \frac{\cos(\varphi - \alpha)}{\sin(\varphi - \alpha) + \sqrt{ \displaystyle \frac{\sin(\varphi + \delta_\text{a}) \cos (\alpha - \beta)}{\sin(\varphi - \beta) \cos (\alpha + \delta_\text{a})} } }  \right]
+$$
+</div>
+</div>
+</div>
+
+  
+
+  <div class="
+      cell border-box-sizing code_cell rendered">
+    <div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">theta_ag_norm</span><span class="p">():</span>
+    <span class="n">t1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi</span> <span class="o">-</span> <span class="n">alpha</span><span class="p">)</span>
+    <span class="n">t2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi</span> <span class="o">-</span> <span class="n">alpha</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi</span> <span class="o">+</span> <span class="n">delta</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">alpha</span><span class="o">-</span><span class="n">beta</span><span class="p">))</span><span class="o">/</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi</span><span class="o">-</span><span class="n">beta</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">alpha</span><span class="o">+</span><span class="n">delta</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">phi</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan</span><span class="p">(</span><span class="n">t1</span><span class="o">/</span><span class="n">t2</span><span class="p">))</span><span class="o">*</span><span class="mi">180</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+  </div>
+
+  
+
+  <div class="
+      cell border-box-sizing code_cell rendered">
+    <div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;For the non-cohesive case the norm gives us </span><span class="si">%.2f</span><span class="s2"> °.&quot;</span> <span class="o">%</span><span class="k">theta_ag_norm</span>())
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>For the non-cohesive case the norm gives us 52.12 °.
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+  </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Tasks:">Tasks:<a class="anchor-link" href="#Tasks:">&#182;</a></h2><ul>
+<li>Check whether you get the same result by setting $c=0$.</li>
+<li>Determine why some starting guesses don't work.</li>
+<li>Play with the parameters and learn something.</li>
+</ul>
+
+</div>
+</div>
+</div>
 
   
 
@@ -13534,31 +14351,41 @@ Technische Universität Bergakademie Freiberg.</em></p>
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">ipywidgets</span> <span class="kn">import</span> <span class="n">widgets</span>
 <span class="kn">from</span> <span class="nn">ipywidgets</span> <span class="kn">import</span> <span class="n">interact</span>
 
-<span class="nd">@interact</span><span class="p">(</span><span class="n">dt</span><span class="o">=</span><span class="n">widgets</span><span class="o">.</span><span class="n">BoundedFloatText</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span><span class="nb">min</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span><span class="nb">max</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">step</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;$\Delta t$ / s&#39;</span><span class="p">),</span>
-          <span class="n">alpha</span><span class="o">=</span><span class="n">widgets</span><span class="o">.</span><span class="n">RadioButtons</span><span class="p">(</span><span class="n">options</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">value</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;$</span><span class="se">\\</span><span class="s1">alpha$&#39;</span><span class="p">))</span>
-
-<span class="k">def</span> <span class="nf">plot_CN</span><span class="p">(</span><span class="n">dt</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span><span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-    <span class="n">time_n</span><span class="p">,</span> <span class="n">y_n</span><span class="p">,</span> <span class="nb">iter</span> <span class="o">=</span> <span class="n">integrate</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span><span class="n">alpha</span><span class="p">)</span>
-    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">ncols</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">nrows</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">18</span><span class="p">,</span><span class="mi">12</span><span class="p">))</span>
-    <span class="c1">#solution</span>
-    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">time</span><span class="p">,</span><span class="n">y_analytical</span><span class="p">(</span><span class="n">time</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;analytical&#39;</span><span class="p">)</span>
-    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">time_n</span><span class="p">,</span><span class="n">y_n</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;numerical&#39;</span><span class="p">,</span><span class="n">marker</span><span class="o">=</span><span class="s1">&#39;d&#39;</span><span class="p">,</span><span class="n">ls</span><span class="o">=</span><span class="s1">&#39;:&#39;</span><span class="p">)</span>
-    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
-    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$t$ / s&#39;</span><span class="p">)</span>
-    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$y$&#39;</span><span class="p">)</span>
-    <span class="c1">#error</span>
-    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">time_n</span><span class="p">,</span><span class="n">y_n</span><span class="o">-</span><span class="n">y_analytical</span><span class="p">(</span><span class="n">time_n</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="n">ls</span><span class="o">=</span><span class="s1">&#39;:&#39;</span><span class="p">,</span><span class="n">marker</span><span class="o">=</span><span class="s1">&#39;d&#39;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;absolute&#39;</span><span class="p">)</span>
-    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">time_n</span><span class="p">[</span><span class="mi">1</span><span class="p">:],(</span><span class="n">y_n</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">-</span><span class="n">y_analytical</span><span class="p">(</span><span class="n">time_n</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span><span class="mi">0</span><span class="p">))</span><span class="o">/</span><span class="n">y_analytical</span><span class="p">(</span><span class="n">time_n</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span><span class="mi">0</span><span class="p">),</span>
-               <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;:&#39;</span><span class="p">,</span><span class="n">marker</span><span class="o">=</span><span class="s1">&#39;d&#39;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;relative&#39;</span><span class="p">)</span>
-    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
-    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$t$ / s&#39;</span><span class="p">)</span>
-    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;error&#39;</span><span class="p">)</span>
-    <span class="c1">#iterations</span>
-    <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">iter</span><span class="p">)</span>
-    <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;time step&#39;</span><span class="p">)</span>
-    <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;number of iterations&#39;</span><span class="p">)</span>
+<span class="nd">@interact</span><span class="p">(</span><span class="n">ic</span><span class="o">=</span><span class="n">widgets</span><span class="o">.</span><span class="n">IntSlider</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;$c$ / kN m$^{-2}$:&#39;</span><span class="p">),</span>
+          <span class="n">iphi</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">IntSlider</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">45</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;$</span><span class="se">\\</span><span class="s1">varphi$ / °:&#39;</span><span class="p">),</span>
+          <span class="n">igamma</span><span class="o">=</span><span class="n">widgets</span><span class="o">.</span><span class="n">IntSlider</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">14</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">18</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;$</span><span class="se">\\</span><span class="s1">gamma$ / kN m$^{-3}$:&#39;</span><span class="p">),</span>
+          <span class="n">iH</span><span class="o">=</span><span class="n">widgets</span><span class="o">.</span><span class="n">IntSlider</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;$H$ / m:&#39;</span><span class="p">),</span>
+          <span class="n">ialpha</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">IntSlider</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;$</span><span class="se">\\</span><span class="s1">alpha$ / °:&#39;</span><span class="p">),</span>
+          <span class="n">ibeta</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">IntSlider</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;$</span><span class="se">\\</span><span class="s1">beta$ / °:&#39;</span><span class="p">),</span>
+          <span class="n">idelta</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">IntSlider</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;$</span><span class="se">\\</span><span class="s1">delta_</span><span class="se">\\</span><span class="s1">mathrm</span><span class="si">{a}</span><span class="s1">$ / °:&#39;</span><span class="p">),</span>
+         <span class="p">)</span>
+<span class="k">def</span> <span class="nf">plot_earth_pressure</span><span class="p">(</span><span class="n">ic</span><span class="p">,</span><span class="n">iphi</span><span class="p">,</span><span class="n">igamma</span><span class="p">,</span><span class="n">iH</span><span class="p">,</span><span class="n">ialpha</span><span class="p">,</span><span class="n">ibeta</span><span class="p">,</span><span class="n">idelta</span><span class="p">):</span>
+    <span class="c1">#unit conversion</span>
+    <span class="k">global</span> <span class="n">c</span>
+    <span class="k">global</span> <span class="n">gamma</span>
+    <span class="k">global</span> <span class="n">phi</span>
+    <span class="k">global</span> <span class="n">alpha</span>
+    <span class="k">global</span> <span class="n">beta</span>
+    <span class="k">global</span> <span class="n">delta</span>
+    <span class="k">global</span> <span class="n">H</span>
     
-    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="n">H</span> <span class="o">=</span> <span class="n">iH</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">ic</span> <span class="o">*</span> <span class="mf">1000.</span>
+    <span class="n">gamma</span> <span class="o">=</span> <span class="n">igamma</span> <span class="o">*</span> <span class="mf">1000.</span>
+    <span class="n">phi</span> <span class="o">=</span> <span class="n">iphi</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mf">180.</span>
+    <span class="n">alpha</span> <span class="o">=</span> <span class="n">ialpha</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mf">180.</span>
+    <span class="n">beta</span> <span class="o">=</span> <span class="n">ibeta</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mf">180.</span>
+    <span class="n">delta</span> <span class="o">=</span> <span class="n">idelta</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mf">180.</span>
+    <span class="c1">#Calculation</span>
+    <span class="n">theta_a</span><span class="p">,</span> <span class="n">it</span> <span class="o">=</span> <span class="n">find_theta</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">4</span> <span class="o">+</span> <span class="n">phi</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+    
+    <span class="n">thetas</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">6</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="mf">0.9</span><span class="p">,</span><span class="mi">100</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">thetas</span><span class="o">*</span><span class="mi">180</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span><span class="n">Ea</span><span class="p">(</span><span class="n">thetas</span><span class="p">)</span><span class="o">/</span><span class="mf">1e6</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">theta_a</span><span class="o">*</span><span class="mi">180</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span><span class="n">Ea</span><span class="p">(</span><span class="n">theta_a</span><span class="p">)</span><span class="o">/</span><span class="mf">1e6</span><span class="p">,</span><span class="n">marker</span><span class="o">=</span><span class="s1">&#39;d&#39;</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;$</span><span class="se">\\</span><span class="s1">vartheta$ / °&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;$E_</span><span class="se">\\</span><span class="s1">mathrm</span><span class="si">{a}</span><span class="s1">$ / MN m$^{-1}$&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">theta_a</span><span class="o">*</span><span class="mi">180</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span><span class="n">Ea</span><span class="p">(</span><span class="n">theta_a</span><span class="p">)</span><span class="o">/</span><span class="mf">1e6</span><span class="p">,</span><span class="s1">&#39;$E_</span><span class="se">\\</span><span class="s1">mathrm</span><span class="si">{a}</span><span class="s1"> = </span><span class="si">%.2f</span><span class="s1">$ MN m$^{-1}$, $</span><span class="se">\\</span><span class="s1">vartheta$ = </span><span class="si">%.1f</span><span class="s1"> °&#39;</span> <span class="o">%</span><span class="p">(</span><span class="n">Ea</span><span class="p">(</span><span class="n">theta_a</span><span class="p">)</span><span class="o">/</span><span class="mf">1e6</span><span class="p">,</span><span class="n">theta_a</span><span class="o">*</span><span class="mi">180</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">();</span>
 </pre></div>
 
     </div>
@@ -13587,26 +14414,23 @@ Technische Universität Bergakademie Freiberg.</em></p>
 </div>
 
   </div>
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>We can also plot the error:</p>
 
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Tasks:</p>
-<ul>
-<li>How does the peak relative error change when you divide the time step size by 10?</li>
-<li>How does the solution change when you increase the rate constant by a factor of 2 and why?</li>
-<li>How does the solution change again for $k=4$ and time step sices of $\Delta t= 0.2$ and $\Delta t = 0.3$?</li>
-<li>Can you recover the forward and Backward Euler solutions?</li>
-</ul>
+  
 
+  <div class="
+      cell border-box-sizing code_cell rendered">
+    <div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span> 
+</pre></div>
+
+    </div>
 </div>
 </div>
-</div>
+
+  </div>
 
 
 

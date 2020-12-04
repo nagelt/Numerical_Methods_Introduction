@@ -13,6 +13,8 @@ Interactive scripts for numerical methods course on MSc level.
 
 [Generalized mid point Newton, nonlinear](04b_Generalized_Midpoint_Newton_Nonlinear.html)
 
+[Active earth pressure, Newton-Raphson](04c_Erddruck_Newton.html)
+
 [Ritz Galerkin collocation](05_soil_column_Ritz_Galerkin_Collocation.html)
 
 [Soil column FDM](06aa_soil_column_FDM.html)
