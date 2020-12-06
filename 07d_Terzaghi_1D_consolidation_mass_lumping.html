@@ -13292,10 +13292,10 @@ $$
     \sigma_{zz} = \sigma_{zz}^\text{eff} + p = \text{const} \quad \rightarrow \quad \dot{\sigma}_{zz} = 0 = \dot{\sigma}_{zz}^\text{eff} + \dot{p}
 $$<p>Substitution yields the partial, linear and homogeneous differential equation</p>
 $$
-    \dot{p} = \frac{E_\text{S} k}{\mu_\text{F}} p_{,zz} = \frac{E_\text{S} K_\text{D}}{\gamma_\text{F}} p_{,zz} = C_\text{V} p_{,zz} \quad \text{with } K_\text{D} = \frac{k\rho_\text{F} g}{\mu_\text{F}}
+    \dot{p} = \frac{E_\text{S} k}{\mu_\text{F}} p_{,zz} = \frac{E_\text{S} K_\text{D}}{\gamma_\text{F}} p_{,zz} = c_\text{v} p_{,zz} \quad \text{with } K_\text{D} = \frac{k\rho_\text{F} g}{\mu_\text{F}}
 $$<p>$[k] = \text{m}^2$: intrinsic permeability</p>
 <p>$[K_\text{D}] = \text{m s}^{-1}$: hydraulic conductivity</p>
-<p>$[C_\text{V}] = \text{m}^2\text{s}^{-1}$: coefficient of consolidation</p>
+<p>$[c_\text{v}] = \text{m}^2\text{s}^{-1}$: coefficient of consolidation</p>
 <h2 id="Weak-form">Weak form<a class="anchor-link" href="#Weak-form">&#182;</a></h2><p>The pore pressure can have (the essential/Dirichlet) boundary conditions in the form:</p>
 $$
     p = \bar{p}\ \forall z \in \partial \Omega_\mathrm{D}
@@ -13304,11 +13304,11 @@ $$
     \eta = 0\ \forall z \in \partial \Omega_\mathrm{D}
 $$<p>and construct the weak form (using integration by parts):</p>
 \begin{align}
-   0 &amp;= \int \limits_0^H \eta \left[\dot{p} - C_\text{V} p_{,zz} \right] \text{d}z
+   0 &amp;= \int \limits_0^H \eta \left[\dot{p} - c_\text{v} p_{,zz} \right] \text{d}z
    \\
-   &amp;= \int \limits_0^H \left[\eta \dot{p} - \left( \eta C_\text{V} p_{,z} \right)_{,z} + \eta_{,z} C_\text{V} p_{,z} \right] \, \text{d}z
+   &amp;= \int \limits_0^H \left[\eta \dot{p} - \left( \eta c_\text{v} p_{,z} \right)_{,z} + \eta_{,z} c_\text{v} p_{,z} \right] \, \text{d}z
    \\
-   &amp;= \int \limits_0^H \left[\eta \dot{p} + \eta_{,z} C_\text{V} p_{,z} \right] \, \text{d}z + \left[ \eta E_\text{S} q_z \right]^H_0
+   &amp;= \int \limits_0^H \left[\eta \dot{p} + \eta_{,z} c_\text{v} p_{,z} \right] \, \text{d}z + \left[ \eta E_\text{S} q_z \right]^H_0
 \end{align}<p>where the natural/Neumann boundary conditions have appeared.</p>
 
 </div>
@@ -13453,21 +13453,21 @@ $$<p>and construct the weak form (using integration by parts):</p>
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Time-and-space-discretization,-Picard-iterations">Time and space discretization, Picard iterations<a class="anchor-link" href="#Time-and-space-discretization,-Picard-iterations">&#182;</a></h2><p>Using a backward Euler approach for simplicity we find the time-discrete weak form as ($p_{n+1} \equiv p$)</p>
 $$
-    0 = \int \limits_0^H \left[\eta \frac{p - p_n}{\Delta t} + \eta_{,z} C_\text{V} p_{,z} \right] \, \text{d}z + \left[ \eta E_\text{S} q_z \right]^H_0
+    0 = \int \limits_0^H \left[\eta \frac{p - p_n}{\Delta t} + \eta_{,z} c_\text{v} p_{,z} \right] \, \text{d}z + \left[ \eta E_\text{S} q_z \right]^H_0
 $$<p>Introducing standard FE approximations</p>
 $$
     p \approx N_i \hat{p}_i, \quad \eta \approx N_i \hat{\eta}_i, \quad \frac{\partial p}{\partial z} \approx \nabla  N_i \hat{p}_i, \quad \frac{\partial \eta}{\partial z} \approx \nabla N_i \hat{\eta}_i
 $$<p>This yields</p>
 $$
 \begin{align}
- 0 &amp;= \int \limits_0^H \left[ N_i \hat{\eta}_i \frac{N_k \hat{p}_k - N_k \hat{p}_{n,k}}{\Delta t} + \nabla N_i \hat{\eta}_i C_\text{V} \nabla N_k \hat{p}_k \right] \, \text{d}z + \left[ N_i \hat{\eta}_i E_\text{S} q_z \right]^H_0
+ 0 &amp;= \int \limits_0^H \left[ N_i \hat{\eta}_i \frac{N_k \hat{p}_k - N_k \hat{p}_{n,k}}{\Delta t} + \nabla N_i \hat{\eta}_i c_\text{v} \nabla N_k \hat{p}_k \right] \, \text{d}z + \left[ N_i \hat{\eta}_i E_\text{S} q_z \right]^H_0
  \end{align}
 $$<p>Now we bring all quantities associated with the unknown pressure to the left-hand side (LHS) and all known quantities to the RHS:</p>
 $$
-    \hat{\eta}_i \int \limits_0^H \left[ N_i \frac{1}{\Delta t} N_k + \nabla N_i C_\text{V} \nabla  N_k \right] \, \text{d}z\ \hat{p}_k =  \hat{\eta}_i \left[ N_{n_\text{n}} E_\text{S} \bar{q}_z|_{z=H} \delta_{n_\text{n}i} - N_{n_\text{n}} E_\text{S} \bar{q}_z|_{z=0} \delta_{i0} \right] +  \hat{\eta}_i \int \limits_0^H N_i \frac{1}{\Delta t} N_k \, \text{d}z\ \hat{p}_{n,k}
+    \hat{\eta}_i \int \limits_0^H \left[ N_i \frac{1}{\Delta t} N_k + \nabla N_i c_\text{v} \nabla  N_k \right] \, \text{d}z\ \hat{p}_k =  \hat{\eta}_i \left[ N_{n_\text{n}} E_\text{S} \bar{q}_z|_{z=H} \delta_{n_\text{n}i} - N_{n_\text{n}} E_\text{S} \bar{q}_z|_{z=0} \delta_{i0} \right] +  \hat{\eta}_i \int \limits_0^H N_i \frac{1}{\Delta t} N_k \, \text{d}z\ \hat{p}_{n,k}
 $$<p>can be simplified by realizing that the nodal test function values are arbitrary and thus</p>
 $$
-    \int \limits_0^H \left[ N_i \frac{1}{\Delta t} N_k + \nabla N_i C_\text{V} \nabla N_k \right] \, \text{d}z\ \hat{p}_k = N_{n_\text{n}} E_\text{S} \bar{q}_z|_{z=H} \delta_{n_\text{n}i} - N_{n_\text{n}} E_\text{S} \bar{q}_z|_{z=0} \delta_{i0} +  \int \limits_0^H N_i \frac{1}{\Delta t} N_k \, \text{d}z\ \hat{p}_{n,k}
+    \int \limits_0^H \left[ N_i \frac{1}{\Delta t} N_k + \nabla N_i c_\text{v} \nabla N_k \right] \, \text{d}z\ \hat{p}_k = N_{n_\text{n}} E_\text{S} \bar{q}_z|_{z=H} \delta_{n_\text{n}i} - N_{n_\text{n}} E_\text{S} \bar{q}_z|_{z=0} \delta_{i0} +  \int \limits_0^H N_i \frac{1}{\Delta t} N_k \, \text{d}z\ \hat{p}_{n,k}
 $$<p>which leaves us with $n_\text{n}$ equations for the $n_\text{n}$ unknown nodal pressures $\hat{p}_k$. If any coefficients in the above are taken as pressure-dependent, the system could be solved repeatedly usind Picard iterations. For strong non-linearities, a Newton linearization would typically be used.</p>
 <h3 id="Question:">Question:<a class="anchor-link" href="#Question:">&#182;</a></h3><p>How would the equation differ for an explicit time integration scheme (forward Euler)?</p>
 
