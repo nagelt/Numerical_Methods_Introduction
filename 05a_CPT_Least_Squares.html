@@ -13887,10 +13887,10 @@ $$
     \sigma^2_\text{exp} = \frac{1}{n_\text{exp}-1} \sum \limits_{i=1}^{n_\text{exp}} \left(I_{\text{D},i} - \bar{I}_\text{D} \right)^2
 $$<p>We can compute a similar measure for the deviation between experimental data and model (the residual sum of squares):</p>
 $$
-    \sum \limits_{i=1}^{n_\text{exp}} r_i = \frac{1}{n_\text{exp}-1} \sum \limits_{i=1}^{n_\text{exp}} \left(I_{\text{D},i} - I_\text{D}^\text{mod} \right)^2
+    \text{RSS} = \frac{1}{n_\text{exp}-1} \sum \limits_{i=1}^{n_\text{exp}} \left(I_{\text{D},i} - I_\text{D}^\text{mod} \right)^2
 $$<p>We can now calculate the coefficient of determination:</p>
 $$
-    R^2 = 1 - \frac{\sum \limits_{i=1}^{n_\text{exp}} r_i}{\sigma^2_\text{exp}}
+    R^2 = 1 - \frac{\text{RSS}}{\sigma^2_\text{exp}}
 $$<p>Should the modelled values always match the experimental ones exactly, we'd arrive at $R^2=1$. If the model simply predicts the mean (so-called baseline model), we arrive at $R^2 = 0$. The more the model explains part of the variability of the data, the more $R^2$ approaches 1. If the model predictions are worse than the baseline model, $R^2$ is negative.</p>
 
 </div>
