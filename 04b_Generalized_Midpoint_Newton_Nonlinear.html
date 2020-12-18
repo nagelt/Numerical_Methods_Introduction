@@ -13540,6 +13540,7 @@ $$<p>To perform this update, we need two incredients: a residual evaluation and 
         <span class="n">y_old</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="c1">#Starting value for recursive update</span>
         <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="c1">#</span>
+        <span class="c1">#Jac = jacobian(y[-1],alpha,dt)</span>
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="c1">#evaluate residual</span>
             <span class="n">res</span> <span class="o">=</span> <span class="n">residual</span><span class="p">(</span><span class="n">y_old</span><span class="p">,</span><span class="n">y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="n">alpha</span><span class="p">,</span><span class="n">dt</span><span class="p">)</span>
