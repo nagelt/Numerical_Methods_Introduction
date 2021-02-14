@@ -13,6 +13,8 @@ Interactive scripts for numerical methods course on MSc level.
 
 [Generalized mid point Newton, nonlinear](04b_Generalized_Midpoint_Newton_Nonlinear.html)
 
+[Iteration schemes: Newton and Picard](04a_Newton_Picard.html)
+
 [Active earth pressure, Newton-Raphson](04c_Erddruck_Newton.html)
 
 [CPT tests and relative density, least squares](05a_CPT_Least_Squares.html)
