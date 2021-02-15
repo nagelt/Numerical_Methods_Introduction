@@ -13446,12 +13446,55 @@ $$<p>In other words, finding $x^*$ for $f(x^*) = 0$ is now the fixed point probl
 <li>What do you observe for the identified solution as you vary the starting guess? Why is this?</li>
 <li>What can you say about the convergence rate?</li>
 </ul>
+<p>Now let's repeat this by rearranging $f(x)$ slightly differently:</p>
+$$
+    g(x) = x - sin(x)
+$$<p>This definition is equivalent in terms of the roots ($\sin x$ and $-\sin x$ share the same roots).</p>
 
 </div>
 </div>
 </div>
+
+  
+
+  <div class="
+      cell border-box-sizing code_cell rendered">
+    <div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">plot_interactive_picard_inv</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    
+
+
+
+  <div class="output_subarea output_widget_view ">
+    <button class="js-nbinteract-widget">
+      Loading widgets...
+    </button>
+  </div>
+
+</div>
+
+</div>
+</div>
+
+  </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
+<p>The attractors change, however the principal problem remains the same as before ....</p>
 <h2 id="Additional-material">Additional material<a class="anchor-link" href="#Additional-material">&#182;</a></h2><h3 id="Modified-Newton-scheme">Modified Newton scheme<a class="anchor-link" href="#Modified-Newton-scheme">&#182;</a></h3><p>In the lecture we saw the modified Newton schemes and the initial stiffness schemes. Here we look at such a modification by keeping keeping the slope constant:</p>
 $$
     x_{i+i} = x_i - \left( \left. \frac{\partial f(x)}{\partial x} \right|_{x_0} \right)^{-1} f(x_i)
