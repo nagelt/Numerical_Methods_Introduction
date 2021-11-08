@@ -13495,7 +13495,7 @@ $\displaystyle \frac{H^{2} \left(\sin{\left(\vartheta \right)} \tan{\left(\alpha
   </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Thus, the area of our triangle is given as:</p>
+<p>.Thus, the area of our triangle is given as:</p>
 $$
     A = \frac{H^2 (\sin \vartheta \tan \alpha + \cos \vartheta) (\tan \alpha \tan \beta + 1)}{2(\sin \vartheta - \cos \vartheta \tan \beta)}
 $$<p>Now we can write the force balance. For that purpose, we introduce the material's specific weight $\gamma$, friction angle $\varphi$ and the wall friction angle $\delta_\text{a}$ as well as the cohesion $c$.</p>
@@ -13743,7 +13743,49 @@ $\displaystyle - \frac{C \cos{\left(\varphi \right)} + G \sin{\left(\varphi - \v
   </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>... for $G$.</p>
+<p>... for $E_\text{a}$. If we substitute the result for $G$, we start to see the issue ....</p>
+
+</div>
+</div>
+</div>
+
+  
+
+  <div class="
+      cell border-box-sizing code_cell rendered">
+    <div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">Ea</span><span class="p">)</span><span class="o">.</span><span class="n">subs</span><span class="p">(</span><span class="n">G</span><span class="p">,</span><span class="n">A</span><span class="o">*</span><span class="n">gamma</span><span class="p">)</span><span class="o">.</span><span class="n">simplify</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    
+
+
+
+<div class="output_latex output_subarea output_execute_result">
+$\displaystyle - \frac{C \left(\sin{\left(\vartheta \right)} - \cos{\left(\vartheta \right)} \tan{\left(\beta \right)}\right) \cos{\left(\varphi \right)} + \frac{H^{2} \gamma \left(\sin{\left(\vartheta \right)} \tan{\left(\alpha \right)} + \cos{\left(\vartheta \right)}\right) \left(\tan{\left(\alpha \right)} \tan{\left(\beta \right)} + 1\right) \sin{\left(\varphi - \vartheta \right)}}{2}}{\left(\sin{\left(\vartheta \right)} - \cos{\left(\vartheta \right)} \tan{\left(\beta \right)}\right) \cos{\left(\alpha + \delta_{a} + \varphi - \vartheta \right)}}$
+</div>
+
+</div>
+
+</div>
+</div>
+
+  </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
 <p>Now we would have to find the maximum with respect to $\vartheta$ in order to identify the active earth pressure and the critical slip angle $\vartheta_\text{a}$. The equations get very complex and we decide to go for a numerical solution.</p>
 <p>First, we define the basic geometry of our problem:</p>
 
