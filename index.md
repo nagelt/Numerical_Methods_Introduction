@@ -15,6 +15,8 @@ Interactive scripts for numerical methods course on MSc level.
 
 [Iteration schemes: Newton and Picard](04a_Newton_Picard.html)
 
+[Iteration schemes: arc length methods](04d_Newton_arclength.html)
+
 [Active earth pressure, Newton-Raphson](04c_Erddruck_Newton.html)
 
 [CPT tests and relative density, least squares](05a_CPT_Least_Squares.html)
