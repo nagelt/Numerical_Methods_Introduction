@@ -45,3 +45,5 @@ Interactive scripts for numerical methods course on MSc level.
 
 [Freezing and thawing](10_freeze_thaw.html)
 
+[Simple 2D FEM example of potential flow, flux calculation](2D_FEM.html)
+
