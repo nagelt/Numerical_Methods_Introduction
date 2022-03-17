@@ -14318,7 +14318,7 @@ $$
     
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Out: -1.943e-04, In: -1.100e-04, Delat_rel: -7.659e-01
+<pre>Out: -3.823e-04, In: -3.106e-04, Delat_rel: -2.308e-01
 </pre>
 </div>
 </div>
@@ -14586,6 +14586,326 @@ $$
 </div>
 
   </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Jacobian-demo">Jacobian demo<a class="anchor-link" href="#Jacobian-demo">&#182;</a></h2><p>Let's assume Darcy's law with a pressure-dependent isotropic permeability in the absence of gravity</p>
+$$
+    \tilde{\mathbf{w}}_\text{LS} = - \frac{k(p)}{\mu} \nabla p
+$$<p>and in turn focus on the related term in the weak balance often written as a Laplace term:</p>
+$$
+    \int \limits_\Omega \nabla \mathbf{N}^\text{T} \frac{k(p)}{\mu} \nabla \mathbf{N} \,\text{d}\Omega\ \hat{\mathbf{p}}
+$$<p>where $p = \mathbf{N} \hat{\mathbf{p}}$ and $\nabla p = \nabla \mathbf{N} \hat{\mathbf{p}}$</p>
+<p>For simplicity, this matrix-vector product can be written as a vector when included as part of the residual (here exclusive):</p>
+$$
+    \mathbf{r} = \int \limits_\Omega \nabla \mathbf{N}^\text{T} \frac{k(p)}{\mu} \nabla p \,\text{d}\Omega
+$$<p>or in index notation</p>
+$$
+    r_i = \int \limits_\Omega \nabla N_{ki} \frac{k(p)}{\mu} p_{,k} \,\text{d}\Omega
+$$
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The associated linearization into the direction of the nodal pressure increments follows as</p>
+\begin{align}
+    \frac{\partial r_i}{\partial \hat{p}_m} \Delta \hat{p}_m &amp;= \int \limits_\Omega \nabla N_{ki} \frac{\partial}{\partial p} \left[ \frac{k(p)}{\mu} p_{,k} \right] \frac{\partial p}{\partial \hat{p}_m} \,\text{d}\Omega\ \Delta \hat{p}_m + \int \limits_\Omega \nabla N_{ki} \frac{\partial}{\partial p_{,l}} \left[ \frac{k(p)}{\mu} p_{,k} \right] \frac{\partial p_{,l}}{\partial \hat{p}_m} \,\text{d}\Omega\ \Delta \hat{p}_m
+    \\
+    &amp;= \int \limits_\Omega \nabla N_{ki} \frac{\partial k(p)}{\partial p} \mu^{-1} p_{,k} N_m \,\text{d}\Omega\ \Delta \hat{p}_m + \int \limits_\Omega \nabla N_{ki} \frac{k(p)}{\mu} \nabla N_{km} \,\text{d}\Omega\ \Delta \hat{p}_m
+\end{align}<p>which recovers the typical result including the Laplace term.</p>
+<p>This implementation can be compared to the finite-difference approximation:</p>
+\begin{align}
+    \frac{\partial r_i(\hat{p}_j)}{\partial \hat{p}_m} \approx \frac{r_i(\hat{p}_j + \epsilon e_m) - r_i(\hat{p}_j - \epsilon e_m)}{2\epsilon}
+\end{align}
+</div>
+</div>
+</div>
+
+  
+
+  <div class="
+      cell border-box-sizing code_cell rendered">
+    <div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">perm</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+    <span class="k">return</span> <span class="mf">1e-10</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">p</span><span class="o">/</span><span class="mf">1e5</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">dperm_dp</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+    <span class="k">return</span> <span class="mf">2.e-5</span><span class="o">*</span><span class="mf">1e-10</span><span class="o">*</span><span class="p">(</span><span class="n">p</span><span class="o">/</span><span class="mf">1e5</span><span class="p">)</span>
+
+<span class="n">nodal_ps</span> <span class="o">=</span> <span class="n">solution</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">6</span><span class="p">]</span>
+<span class="n">nodal_ps</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>array([1000000.        ,  126466.95631001,  890177.58482449,
+       1008322.55184674])</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+  </div>
+
+  
+
+  <div class="
+      cell border-box-sizing code_cell rendered">
+    <div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">assemble_residual</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span><span class="n">ps</span><span class="p">):</span>
+    <span class="n">r_loc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+    <span class="n">nip</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">_quad4_element__quad_degree</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nip</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nip</span><span class="p">):</span>
+            <span class="c1">#local integration point coordinate</span>
+            <span class="n">xi</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">_quad4_element__quad_points</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">eta</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">_quad4_element__quad_points</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+            <span class="n">N</span> <span class="o">=</span> <span class="n">shape_function</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span><span class="n">eta</span><span class="p">)</span>
+            <span class="n">dN_dX</span> <span class="o">=</span> <span class="n">grad_shape_function</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span><span class="n">eta</span><span class="p">,</span><span class="n">elem</span><span class="p">)</span>
+            <span class="n">p_ip</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">ps</span><span class="p">)</span>
+            <span class="n">grad_p_ip</span> <span class="o">=</span> <span class="n">dN_dX</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">ps</span><span class="p">)</span>
+            <span class="c1">#determinant of Jacobian</span>
+            <span class="n">detJ</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">det</span><span class="p">(</span><span class="n">element_jacobian</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span><span class="n">eta</span><span class="p">,</span><span class="n">elem</span><span class="p">))</span>
+            <span class="c1">#integration weight</span>
+            <span class="n">w_i</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">_quad4_element__quad_weights</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">w_j</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">_quad4_element__quad_weights</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+            <span class="c1">#assembly of local stiffness matrix</span>
+            <span class="n">r_loc</span> <span class="o">+=</span> <span class="n">dN_dX</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">perm</span><span class="p">(</span><span class="n">p_ip</span><span class="p">)</span><span class="o">/</span><span class="n">mu</span><span class="o">*</span><span class="n">grad_p_ip</span><span class="p">)</span> <span class="o">*</span> <span class="n">w_i</span> <span class="o">*</span> <span class="n">w_j</span> <span class="o">*</span> <span class="n">detJ</span>
+    <span class="k">return</span> <span class="n">r_loc</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+  </div>
+
+  
+
+  <div class="
+      cell border-box-sizing code_cell rendered">
+    <div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">assemble_Jac</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span><span class="n">ps</span><span class="p">):</span>
+    <span class="n">K_loc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+    <span class="n">nip</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">_quad4_element__quad_degree</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nip</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nip</span><span class="p">):</span>
+            <span class="c1">#local integration point coordinate</span>
+            <span class="n">xi</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">_quad4_element__quad_points</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">eta</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">_quad4_element__quad_points</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+            <span class="n">N</span> <span class="o">=</span> <span class="n">shape_function</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span><span class="n">eta</span><span class="p">)</span>
+            <span class="n">dN_dX</span> <span class="o">=</span> <span class="n">grad_shape_function</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span><span class="n">eta</span><span class="p">,</span><span class="n">elem</span><span class="p">)</span>
+            <span class="n">p_ip</span> <span class="o">=</span> <span class="n">N</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">ps</span><span class="p">)</span>
+            <span class="n">grad_p_ip</span> <span class="o">=</span> <span class="n">dN_dX</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">ps</span><span class="p">)</span>
+            <span class="c1">#determinant of Jacobian</span>
+            <span class="n">detJ</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">det</span><span class="p">(</span><span class="n">element_jacobian</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span><span class="n">eta</span><span class="p">,</span><span class="n">elem</span><span class="p">))</span>
+            <span class="c1">#integration weight</span>
+            <span class="n">w_i</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">_quad4_element__quad_weights</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">w_j</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">_quad4_element__quad_weights</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+            <span class="c1">#assembly of local stiffness matrix</span>
+            <span class="n">K_loc</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">dN_dX</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">perm</span><span class="p">(</span><span class="n">p_ip</span><span class="p">)</span><span class="o">/</span><span class="n">mu</span><span class="p">),</span><span class="n">dN_dX</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="o">*</span> <span class="n">w_i</span> <span class="o">*</span> <span class="n">w_j</span> <span class="o">*</span> <span class="n">detJ</span>
+            <span class="n">K_loc</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">dN_dX</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">dperm_dp</span><span class="p">(</span><span class="n">p_ip</span><span class="p">)</span><span class="o">/</span><span class="n">mu</span><span class="o">*</span><span class="n">grad_p_ip</span><span class="p">),</span><span class="n">N</span><span class="p">)</span> <span class="o">*</span> <span class="n">w_i</span> <span class="o">*</span> <span class="n">w_j</span> <span class="o">*</span> <span class="n">detJ</span>
+    <span class="k">return</span> <span class="n">K_loc</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+  </div>
+
+  
+
+  <div class="
+      cell border-box-sizing code_cell rendered">
+    <div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Analytical inner Jacobian</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">assemble_Jac</span><span class="p">(</span><span class="n">element_vector</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">nodal_ps</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Analytical inner Jacobian
+
+ [[ 5.43662953e-06  2.58398924e-07 -2.01539150e-06 -1.51380206e-06]
+ [-2.71252302e-06  8.25697398e-07 -2.30888769e-06 -3.18430753e-06]
+ [-2.31527654e-06  6.22641900e-08  4.49088635e-06 -1.87134931e-06]
+ [-4.08829965e-07 -1.14636051e-06 -1.66607152e-07  6.56945890e-06]]
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+  </div>
+
+  
+
+  <div class="
+      cell border-box-sizing code_cell rendered">
+    <div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">epsilon</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="mf">1e-8</span><span class="p">,</span><span class="mf">1e-8</span><span class="o">*</span><span class="n">p</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+  </div>
+
+  
+
+  <div class="
+      cell border-box-sizing code_cell rendered">
+    <div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># could use forward differences to safe one set of evaluations</span>
+<span class="k">def</span> <span class="nf">Numerical_Jac</span><span class="p">(</span><span class="n">elem</span><span class="p">):</span>
+    <span class="n">Jac</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nodal_ps</span><span class="p">)):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nodal_ps</span><span class="p">)):</span>
+            <span class="n">upper_p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">nodal_ps</span><span class="p">)</span>
+            <span class="n">lower_p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">nodal_ps</span><span class="p">)</span>
+            <span class="n">eps</span> <span class="o">=</span> <span class="n">epsilon</span><span class="p">(</span><span class="n">nodal_ps</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+            <span class="n">upper_p</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">+=</span> <span class="n">eps</span>
+            <span class="n">lower_p</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">-=</span> <span class="n">eps</span>
+            <span class="n">Jac</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">assemble_residual</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span><span class="n">upper_p</span><span class="p">)[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">assemble_residual</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span><span class="n">lower_p</span><span class="p">)[</span><span class="n">i</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="mf">2.</span><span class="o">*</span><span class="n">eps</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Jac</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+  </div>
+
+  
+
+  <div class="
+      cell border-box-sizing code_cell rendered">
+    <div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Numerical outer Jacobian</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">Numerical_Jac</span><span class="p">(</span><span class="n">element_vector</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Numerical outer Jacobian
+
+ [[ 5.43662956e-06  2.58398930e-07 -2.01539149e-06 -1.51380207e-06]
+ [-2.71252307e-06  8.25697484e-07 -2.30888767e-06 -3.18430756e-06]
+ [-2.31527653e-06  6.22643411e-08  4.49088630e-06 -1.87134932e-06]
+ [-4.08829948e-07 -1.14636065e-06 -1.66607141e-07  6.56945891e-06]]
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+  </div>
+
+  
+
+  <div class="
+      cell border-box-sizing code_cell rendered">
+    <div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Relative difference between both, rounded to 1e-8 </span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">((</span><span class="n">assemble_Jac</span><span class="p">(</span><span class="n">element_vector</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">nodal_ps</span><span class="p">)</span> <span class="o">-</span> <span class="n">Numerical_Jac</span><span class="p">(</span><span class="n">element_vector</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span><span class="o">/</span><span class="n">assemble_Jac</span><span class="p">(</span><span class="n">element_vector</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">nodal_ps</span><span class="p">),</span><span class="mi">8</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Relative difference between both, rounded to 1e-8 
+
+ [[-1.00e-08 -2.00e-08  1.00e-08 -1.00e-08]
+ [-2.00e-08 -1.00e-07  1.00e-08 -1.00e-08]
+ [ 0.00e+00 -2.43e-06  1.00e-08 -0.00e+00]
+ [ 4.00e-08 -1.20e-07  7.00e-08 -0.00e+00]]
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+  </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Equivalence ....</p>
+
+</div>
+</div>
+</div>
 
 
 
