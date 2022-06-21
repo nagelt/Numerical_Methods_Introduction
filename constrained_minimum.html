@@ -13302,8 +13302,13 @@ Technische Universität Bergakademie Freiberg.</em></p>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Constrained-minimization,-Lagrange-multipliers">Constrained minimization, Lagrange multipliers<a class="anchor-link" href="#Constrained-minimization,-Lagrange-multipliers">&#182;</a></h1><p>These are some thoughts to help introduce the notion of Lagrange multipliers in optimization problems.</p>
-<h2 id="Intuitive-motivation">Intuitive motivation<a class="anchor-link" href="#Intuitive-motivation">&#182;</a></h2><p>Consider the function $f(x,y)$ which we wish to minimize by finding $\nabla f = \mathbf{0}$. At the same time we want to fulfill some constraint $g(x,y) = 0$.</p>
+<h1 id="Constrained-minimization,-Lagrange-multipliers">Constrained minimization, Lagrange multipliers<a class="anchor-link" href="#Constrained-minimization,-Lagrange-multipliers">&#182;</a></h1><p>These are some thoughts to help introduce the notion of Lagrange multipliers in optimization problems. We want to understand (among many other things)</p>
+<ul>
+<li>why we can simply add constraints multiplied by Lagrange multipliers to objective functions to find constrained extrema,</li>
+<li>how Lagrange multipliers are related to the Lagrangian formalism in mechanics,</li>
+<li>why they are often interpreted as (generalized, thermodynamic) reaction forces to constraints.</li>
+</ul>
+<h2 id="Intuitive-(geometric)-motivation">Intuitive (geometric) motivation<a class="anchor-link" href="#Intuitive-(geometric)-motivation">&#182;</a></h2><p>Consider the function $f(x,y)$ which we wish to minimize by finding $\nabla f = \mathbf{0}$. At the same time we want to fulfill some constraint $g(x,y) = 0$.</p>
 <p>To be more specific, we choose the functions</p>
 \begin{align}
     f(x,y) &amp;= 1 + 0.8 x^2 + 0.3 y^2
@@ -13398,7 +13403,7 @@ Technische Universität Bergakademie Freiberg.</em></p>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>The black line shows the intersecting curve between both surfaces.</p>
-<p>To understand a little bit better what's going on, let's draw gradients with the isolines. Remember, that gradients indicate the direction of steepest ascent.</p>
+<p>To understand a little bit better what's going on, let's draw gradients with the isolines. Remember, that gradients indicate the direction of steepest ascent. We want to walk into the valley, i.e. opposite to the gradient vectors.</p>
 
 </div>
 </div>
@@ -13481,10 +13486,11 @@ Technische Universität Bergakademie Freiberg.</em></p>
 <p>The red arrows represent $\nabla f$, the black arrows $\nabla g$. From this picture, we can now read two conditions for the minizer $(x^*,y^*)$ of $f$ subject to $g = 0$. Firstly</p>
 $$
     g(x^*,y^*) = 0
-$$<p>needs to hold, i.e. we need to be on the black curve. Secondly, for a minimum we find that the gradient vectors are parallel but opposite (aligned for a maximum), i.e.:</p>
+$$<p>needs to hold, i.e. we need to be on the black curve. Secondly, for our minimum we find that the gradient vectors are parallel but opposite (aligned for a maximum), i.e.:</p>
 $$
     \nabla f |_{x^*,y^*} = - \lambda \nabla g |_{x^*,y^*}
-$$<p>All conditions can be satisfied by defining a functional $L(x,y,\lambda) = f(x,y) + \lambda g(x,y)$ for which we seek the optimum:</p>
+$$<p>In other words, the vectors pointing "downhill", $-\nabla f$, and the gradient of the constraint, $\nabla g$, are parallel and differ only by a scalar multiplier $\lambda$.</p>
+<p>All conditions can be satisfied by defining a functional $L(x,y,\lambda) = f(x,y) + \lambda g(x,y)$ for which we seek the optimum:</p>
 $$
     \text{grad} L = \mathbf{0} = 
     \begin{pmatrix}
@@ -13522,7 +13528,7 @@ $$
 $$<p>and the Euler-Lagrange equation as</p>
 $$
     \frac{\text{d}}{\text{d}t}\frac{\partial L}{\partial \dot{\mathbf{x}}} = \frac{\partial L}{\partial \mathbf{x}}
-$$<p>Consider a particle moving in the potential $V(\mathbf{x})$, then applying the formalism to the Lagrangian</p>
+$$<p>Consider a particle with constant mass moving in the potential $V(\mathbf{x})$, then applying the usual formalism to the Lagrangian</p>
 $$
     L = \frac{m}{2} \dot{\mathbf{x}} \cdot \dot{\mathbf{x}} - V(\mathbf{x})
 $$<p>yields</p>
