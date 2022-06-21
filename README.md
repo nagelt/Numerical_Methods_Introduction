@@ -47,3 +47,5 @@ Interactive scripts for numerical methods course on MSc level.
 
 [Simple 2D FEM example of potential flow, flux calculation](2D_FEM.html)
 
+[Some notes on Lagrange multipliers](constrained_minimum.html)
+
