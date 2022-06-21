@@ -13528,14 +13528,14 @@ $$
 $$<p>yields</p>
 $$
     \frac{\text{d}m \dot{\mathbf{x}}}{\text{d}t} = - \text{grad}\,V \quad \mbox{or} \quad \dot{\mathbf{p}} = m \ddot{\mathbf{x}} = \mathbf{F}
-$$<p>i.e. the Lagrangian recovers Newton's law.</p>
+$$<p>i.e. the Euler-Lagrange equation recovers Newton's law.</p>
 
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Constraints">Constraints<a class="anchor-link" href="#Constraints">&#182;</a></h3><p>For every constraint $\mathbf{c}(\mathbf{q}) = 0$ a (steep) force potential can be added that allows the calculation of a reaction force:
+<h3 id="Constraints">Constraints<a class="anchor-link" href="#Constraints">&#182;</a></h3><p>We now proceed from a vector of generalized coordinates $\mathbf{q}$. For every constraint $\mathbf{c}(\mathbf{q}) = 0$ a (steep) force potential can be added that allows the calculation of a reaction force:
 $$
     L_\text{c} = E_\text{kin} - E_\text{pot} - V_\text{c} = L - V_\text{c}(\mathbf{c})
     \quad \mbox{so that} \quad
@@ -13559,7 +13559,7 @@ $$
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>As an <strong>example</strong> consider the spring-pendulum-in-a-slide system as shown the figure. Sliding is frictionless, the spring is force-free at extension $l$.</p>
+<p>As an <strong>example</strong> consider the spring-pendulum-in-a-slide system as shown the figure. Sliding is frictionless, the spring is force-free at extension $l$. The coordinates $x$ and $y$ locate the point mass $m$.</p>
 <p><strong>Option 1</strong>: Seeing that the system has one DOF, one can directly write:</p>
 $$
     L = \frac{m}{2} \dot{y}^2 - \frac{k}{2}\left[ \sqrt{l^2 + y^2} - l \right]^2
@@ -13604,7 +13604,7 @@ $$<p>i.e. the reaction force holds the object in place (spring is assumed force-
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Considering fields $\boldsymbol{\chi}(\mathbf{X},t)$ one finds for a Lagrangian density functional $L(\boldsymbol{\chi}, \text{Grad}\, \boldsymbol{\chi}, \text{D}_t \boldsymbol{\chi},\mathbf{X}, t)$. We now seek stationarity of the action</p>
+<p>Considering kinematic fields $\boldsymbol{\chi}(\mathbf{X},t)$ one finds for a Lagrangian density functional $L(\boldsymbol{\chi}, \text{Grad}\, \boldsymbol{\chi}, \text{D}_t \boldsymbol{\chi},\mathbf{X}, t)$. We now seek stationarity of the action</p>
 $$
     S = \int \limits_{\Omega_0 \times T} L(\boldsymbol{\chi}, \text{Grad}\, \boldsymbol{\chi}, \text{D}_t \boldsymbol{\chi},\mathbf{X}, t)\, \text{d} \Omega_0\, \text{d} t
 $$<p>for variations $\delta \boldsymbol{\chi}$ which vanish on the space-time boundaries. Therefore,</p>
@@ -13622,13 +13622,14 @@ $$<p>for variations $\delta \boldsymbol{\chi}$ which vanish on the space-time bo
 \end{align}<p>one arrives at the Euler-Lagrange equations in the form</p>
 $$
 \frac{\partial L}{\partial \boldsymbol{\chi}} - \text{Div}\, \frac{\partial L}{\partial \text{Grad}\, \boldsymbol{\chi}} - \text{D}_t \left( \frac{\partial L}{\partial \text{D}_t \boldsymbol{\chi}} \right) = \mathbf{0}
-$$<p>As an <em>example</em> consider the following Lagrangian where $\mathbf{x} = \boldsymbol{\chi}(\mathbf{X},t)$, $\text{D}_t \boldsymbol{\chi} = \dot{\mathbf{x}}$, and $\text{Grad}\, \boldsymbol{\chi} = \mathbf{F}$:</p>
+$$<p>As an <em>example</em> consider the following Lagrangian where $\mathbf{x} = \boldsymbol{\chi}(\mathbf{X},t)$, $\text{D}_t \boldsymbol{\chi} = \dot{\mathbf{x}}$, and $\text{Grad}\, \boldsymbol{\chi} = \mathbf{F}$ (with $\mathbf{F}$ as the deformation gradient):</p>
 $$
     L = \frac{\varrho_0}{2} \dot{\mathbf{x}} \cdot \dot{\mathbf{x}} - \psi(\mathbf{F}) + \varrho_0 \mathbf{b} \cdot \mathbf{x}
 $$<p>Then, we arrive at the usual equations of motion in a material setting:</p>
 $$
     \varrho_0 \ddot{\mathbf{x}} = \varrho_0 \mathbf{b} + \text{Div}\, \mathbf{P}
-$$
+$$<p>with the first Piola-Kirchhoff stress tensor $\mathbf{P}$.</p>
+
 </div>
 </div>
 </div>
