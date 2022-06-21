@@ -13596,6 +13596,42 @@ $$<p>i.e. the reaction force holds the object in place (spring is assumed force-
 </div>
 </div>
 </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Extension-to-fields">Extension to fields<a class="anchor-link" href="#Extension-to-fields">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Considering fields $\boldsymbol{\chi}(\mathbf{X},t)$ one finds for a Lagrangian density functional $L(\boldsymbol{\chi}, \text{Grad}\, \boldsymbol{\chi}, \text{D}_t \boldsymbol{\chi},\mathbf{X}, t)$. We now seek stationarity of the action</p>
+$$
+    S = \int \limits_{\Omega_0 \times T} L(\boldsymbol{\chi}, \text{Grad}\, \boldsymbol{\chi}, \text{D}_t \boldsymbol{\chi},\mathbf{X}, t)\, \text{d} \Omega_0\, \text{d} t
+$$<p>for variations $\delta \boldsymbol{\chi}$ which vanish on the space-time boundaries. Therefore,</p>
+\begin{align}
+    0 = \delta S &amp;= \int \limits_{\Omega_0 \times T} \left[ \frac{\partial L}{\partial \boldsymbol{\chi}} \cdot \delta \boldsymbol{\chi} + \frac{\partial L}{\partial \text{Grad}\, \boldsymbol{\chi}} : \delta \text{Grad}\, \boldsymbol{\chi} + \frac{\partial L}{\partial \text{D}_t \boldsymbol{\chi}} \cdot \text{D}_t \delta \boldsymbol{\chi} \right]\, \text{d} \Omega_0\, \text{d} t
+    \\
+    &amp;= \int \limits_{\Omega_0 \times T} \left[ \frac{\partial L}{\partial \boldsymbol{\chi}} \cdot \delta \boldsymbol{\chi} + \text{Div}\, \left( \delta \boldsymbol{\chi} \frac{\partial L}{\partial \text{Grad}\, \boldsymbol{\chi}} \right) - \delta \boldsymbol{\chi} \cdot \text{Div}\, \frac{\partial L}{\partial \text{Grad}\, \boldsymbol{\chi}} + \right.
+    \\
+    &amp;\qquad+ \left. \text{D}_t \left( \frac{\partial L}{\partial \text{D}_t \boldsymbol{\chi}} \cdot \delta \boldsymbol{\chi}\right) - \text{D}_t \left( \frac{\partial L}{\partial \text{D}_t \boldsymbol{\chi}} \right) \cdot \delta \boldsymbol{\chi} \right] \,\text{d} \Omega_0\, \text{d} t
+    \\
+    &amp;= \int \limits_{\Omega_0 \times T} \delta \boldsymbol{\chi} \cdot \left[ \frac{\partial L}{\partial \boldsymbol{\chi}} - \text{Div}\, \frac{\partial L}{\partial \text{Grad}\, \boldsymbol{\chi}} - \text{D}_t \left( \frac{\partial L}{\partial \text{D}_t \boldsymbol{\chi}} \right) \right] \,\text{d} \Omega_0\, \text{d} t
+    +
+    \underbrace{\int \limits_{\partial \Omega_0 \times T} \delta \boldsymbol{\chi} \frac{\partial L}{\partial \text{Grad}\, \boldsymbol{\chi}} \cdot \mathbf{N} \text{d} \Gamma_0 \, \text{d} t}_{=0} \\
+    &amp;\qquad+ \underbrace{\int \limits_{\Omega_0} \left. \left( \frac{\partial L}{\partial \text{D}_t \boldsymbol{\chi}} \cdot \delta \boldsymbol{\chi}\right) \right|_{t_0}^{t_1} \text{d} \Omega_0}_{=0}
+\end{align}<p>one arrives at the Euler-Lagrange equations in the form</p>
+$$
+\frac{\partial L}{\partial \boldsymbol{\chi}} - \text{Div}\, \frac{\partial L}{\partial \text{Grad}\, \boldsymbol{\chi}} - \text{D}_t \left( \frac{\partial L}{\partial \text{D}_t \boldsymbol{\chi}} \right) = \mathbf{0}
+$$<p>As an <em>example</em> consider the following Lagrangian where $\mathbf{x} = \boldsymbol{\chi}(\mathbf{X},t)$, $\text{D}_t \boldsymbol{\chi} = \dot{\mathbf{x}}$, and $\text{Grad}\, \boldsymbol{\chi} = \mathbf{F}$:</p>
+$$
+    L = \frac{\varrho_0}{2} \dot{\mathbf{x}} \cdot \dot{\mathbf{x}} - \psi(\mathbf{F}) + \varrho_0 \mathbf{b} \cdot \mathbf{x}
+$$<p>Then, we arrive at the usual equations of motion in a material setting:</p>
+$$
+    \varrho_0 \ddot{\mathbf{x}} = \varrho_0 \mathbf{b} + \text{Div}\, \mathbf{P}
+$$
+</div>
+</div>
+</div>
 
 
 
