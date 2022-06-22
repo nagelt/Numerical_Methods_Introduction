@@ -13483,13 +13483,13 @@ Technische Universität Bergakademie Freiberg.</em></p>
   </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>The red arrows represent $\nabla f$, the black arrows $\nabla g$. From this picture, we can now read two conditions for the minizer $(x^*,y^*)$ of $f$ subject to $g = 0$. Firstly</p>
+<p>The red arrows represent $\nabla f$, the black arrows $\nabla g$. From this picture, we can now read two conditions for the minimizer $(x^*,y^*)$ of $f$ subject to $g = 0$. Firstly</p>
 $$
     g(x^*,y^*) = 0
 $$<p>needs to hold, i.e. we need to be on the black curve. Secondly, for our minimum we find that the gradient vectors are parallel but opposite (aligned for a maximum), i.e.:</p>
 $$
     \nabla f |_{x^*,y^*} = - \lambda \nabla g |_{x^*,y^*}
-$$<p>In other words, the vectors pointing "downhill", $-\nabla f$, and the gradient of the constraint, $\nabla g$, are parallel and differ only by a scalar multiplier $\lambda$.</p>
+$$<p>In other words, the vectors pointing "downhill", $-\nabla f$, and the gradient of the constraint, $\nabla g$, are parallel and differ only by a scalar multiplier $\lambda$. If both vectors were not parallel, then there would be a component of the cost function gradient tangential to the constraint. In other words, one could "move" along the constraint and decrease or increase the value of the function. Therefore, as long as they are not aligned, one is not at an extremum.</p>
 <p>All conditions can be satisfied by defining a functional $L(x,y,\lambda) = f(x,y) + \lambda g(x,y)$ for which we seek the optimum:</p>
 $$
     \text{grad} L = \mathbf{0} = 
@@ -13595,7 +13595,7 @@ $$
 $$<p>One can observe, e.g.,</p>
 $$
     F_\text{c}(y=0) = - mg
-$$<p>i.e. the reaction force holds the object in place (spring is assumed force-free at $y=0$) by supporting its weight (negative means the reaction force acts on the object against the $x$-coordinate direction, as intuited). One can further observe the position where gravity and spring-force cancel each other vertically so that the slide is force-free (see below), provided the spring is stiff enough.</p>
+$$<p>i.e. the reaction force holds the object in place (spring is assumed force-free at $y=0$) by supporting its weight (negative means the reaction force acts on the object against the $x$-coordinate direction, as intuited). One can further observe the position where gravity and spring-force cancel each other vertically so that the slide is vertically force-free (see below), provided the spring is stiff enough.</p>
 <p><img src="https://github.com/nagelt/Numerical_Methods_Introduction/raw/master/Images/spring_slide_result.png" style="width: 600px;"/></p>
 <p>This notion can be extended to fields (continuum mechanics).</p>
 
