@@ -25,4 +25,10 @@ The latter allows an interactive adaptation of parameters to immediatly illustra
 
 The notebooks can be viewed with nbviewer, see https://jupyter.org/, or can now also be run interactively using binder (available through nbviewer).
 
+See https://nagelt.github.io
+
 *Comments and contributions are welcome.*
+
+**Related publication:**
+
+Kern, D., & Nagel, T. (2022). An experimental numerics approach to the terrestrial brachistochrone. GAMM Archive for Students, 4(1), 29–35. https://doi.org/10.14464/gammas.v4i1.512
