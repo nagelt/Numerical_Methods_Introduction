@@ -1,55 +1,57 @@
 Interactive scripts for numerical methods course on MSc level. Comments and contributions are welcome.
 
+Note: I've transitioned from interactive html pages created with nbinteract to a direct usage of mybinder. Starting any of the scripts may take a few minutes depending on when the last built took place.
+
 Related publication:
 
 Kern, D., & Nagel, T. (2022). An experimental numerics approach to the terrestrial brachistochrone. GAMM Archive for Students, 4(1), 29–35. https://doi.org/10.14464/gammas.v4i1.512
 
 
-[Explicit Euler](01_Forward_Euler.html)
+[Explicit Euler](https://mybinder.org/v2/gh/nagelt/Numerical_Methods_Introduction/HEAD?labpath=01_Forward_Euler.ipynb)
 
-[Implicit Euler](02_Backward_Euler_Picard.html)
+[Implicit Euler](https://mybinder.org/v2/gh/nagelt/Numerical_Methods_Introduction/HEAD?labpath=02_Backward_Euler_Picard.ipynb)
 
-[Generalized mid point Picard](03_Generalized_Midpoint_Picard.html)
+[Generalized mid point Picard](https://mybinder.org/v2/gh/nagelt/Numerical_Methods_Introduction/HEAD?labpath=03_Generalized_Midpoint_Picard.ipynb)
 
-[Generalized mid point Picard, nonlinear](03b_Generalized_Midpoint_Picard_Nonlin.html)
+[Generalized mid point Picard, nonlinear](https://mybinder.org/v2/gh/nagelt/Numerical_Methods_Introduction/HEAD?labpath=03b_Generalized_Midpoint_Picard_Nonlin.ipynb)
 
-[Generalized mid point Newton](04_Generalized_Midpoint_Newton.html)
+[Generalized mid point Newton](https://mybinder.org/v2/gh/nagelt/Numerical_Methods_Introduction/HEAD?labpath=04_Generalized_Midpoint_Newton.ipynb)
 
-[Generalized mid point Newton, nonlinear](04b_Generalized_Midpoint_Newton_Nonlinear.html)
+[Generalized mid point Newton, nonlinear](https://mybinder.org/v2/gh/nagelt/Numerical_Methods_Introduction/HEAD?labpath=04b_Generalized_Midpoint_Newton_Nonlinear.ipynb)
 
-[Iteration schemes: Newton and Picard](04a_Newton_Picard.html)
+[Iteration schemes: Newton and Picard](https://mybinder.org/v2/gh/nagelt/Numerical_Methods_Introduction/HEAD?labpath=04a_Newton_Picard.ipynb)
 
-[Iteration schemes: arc length methods](04d_Newton_arclength.html)
+[Iteration schemes: arc length methods](https://mybinder.org/v2/gh/nagelt/Numerical_Methods_Introduction/HEAD?labpath=04d_Newton_arclength.ipynb)
 
-[Active earth pressure, Newton-Raphson](04c_Erddruck_Newton.html)
+[Active earth pressure, Newton-Raphson](https://mybinder.org/v2/gh/nagelt/Numerical_Methods_Introduction/HEAD?labpath=04c_Erddruck_Newton.ipynb)
 
-[CPT tests and relative density, least squares](05a_CPT_Least_Squares.html)
+[CPT tests and relative density, least squares](https://mybinder.org/v2/gh/nagelt/Numerical_Methods_Introduction/HEAD?labpath=05a_CPT_Least_Squares.ipynb)
 
-[Ritz Galerkin collocation](05_soil_column_Ritz_Galerkin_Collocation.html)
+[Ritz Galerkin collocation](https://mybinder.org/v2/gh/nagelt/Numerical_Methods_Introduction/HEAD?labpath=05_soil_column_Ritz_Galerkin_Collocation.ipynb)
 
-[Soil column FDM](06aa_soil_column_FDM.html)
+[Soil column FDM](https://mybinder.org/v2/gh/nagelt/Numerical_Methods_Introduction/HEAD?labpath=06aa_soil_column_FDM.ipynb)
 
-[Spatial discretization and integration](06a_discretization_and_integration.html)
+[Spatial discretization and integration](https://mybinder.org/v2/gh/nagelt/Numerical_Methods_Introduction/HEAD?labpath=06a_discretization_and_integration.ipynb)
 
-[Soil column FEM](06_soil_column_FEM.html)
+[Soil column FEM](https://mybinder.org/v2/gh/nagelt/Numerical_Methods_Introduction/HEAD?labpath=06_soil_column_FEM.ipynb)
 
-[Terzaghi consolidation](07_Terzaghi_1D_consolidation.html)
+[Terzaghi consolidation](https://mybinder.org/v2/gh/nagelt/Numerical_Methods_Introduction/HEAD?labpath=07_Terzaghi_1D_consolidation.ipynb)
 
-[Terzaghi consolidation, explicit](07b_Terzaghi_1D_consolidation_explicit.html)
+[Terzaghi consolidation, explicit](https://mybinder.org/v2/gh/nagelt/Numerical_Methods_Introduction/HEAD?labpath=07b_Terzaghi_1D_consolidation_explicit.ipynb)
 
-[Terzaghi consolidation, Crank-Nicolson](07c_Terzaghi_1D_consolidation_CN.html)
+[Terzaghi consolidation, Crank-Nicolson](https://mybinder.org/v2/gh/nagelt/Numerical_Methods_Introduction/HEAD?labpath=07c_Terzaghi_1D_consolidation_CN.ipynb)
 
-[Terzaghi consolidation, mass lumping](07d_Terzaghi_1D_consolidation_mass_lumping.html)
+[Terzaghi consolidation, mass lumping](https://mybinder.org/v2/gh/nagelt/Numerical_Methods_Introduction/HEAD?labpath=07d_Terzaghi_1D_consolidation_mass_lumping.ipynb)
 
-[Terzaghi consolidation, mass lumping and finite increment calculus](07e_Terzaghi_1D_consolidation_mass_lumping_FIC_stabilization.html)
+[Terzaghi consolidation, mass lumping and finite increment calculus](https://mybinder.org/v2/gh/nagelt/Numerical_Methods_Introduction/HEAD?labpath=07e_Terzaghi_1D_consolidation_mass_lumping_FIC_stabilization.ipynb)
 
-[Coupled problems](08_coupled_problems.html)
+[Coupled problems](https://mybinder.org/v2/gh/nagelt/Numerical_Methods_Introduction/HEAD?labpath=08_coupled_problems.ipynb)
 
-[Localization in 1D](09_localization_1d.html)
+[Localization in 1D](https://mybinder.org/v2/gh/nagelt/Numerical_Methods_Introduction/HEAD?labpath=09_localization_1d.ipynb)
 
-[Freezing and thawing](10_freeze_thaw.html)
+[Freezing and thawing](https://mybinder.org/v2/gh/nagelt/Numerical_Methods_Introduction/HEAD?labpath=10_freeze_thaw.ipynb)
 
-[Simple 2D FEM example of potential flow, flux calculation](2D_FEM.html)
+[Simple 2D FEM example of potential flow, flux calculation](https://mybinder.org/v2/gh/nagelt/Numerical_Methods_Introduction/HEAD?labpath=2D_FEM.ipynb)
 
-[Some notes on Lagrange multipliers](constrained_minimum.html)
+[Some notes on Lagrange multipliers](https://mybinder.org/v2/gh/nagelt/Numerical_Methods_Introduction/HEAD?labpath=constrained_minimum.ipynb)
 
