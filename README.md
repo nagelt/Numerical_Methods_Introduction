@@ -1,10 +1,19 @@
 Interactive scripts for numerical methods course on MSc level. Comments and contributions are welcome.
 
-Note: I've transitioned from interactive html pages created with nbinteract to a direct usage of mybinder. Starting any of the scripts may take a few minutes depending on when the last built took place.
+**Note:** I've transitioned from interactive html pages created with nbinteract to a direct usage of mybinder. Starting any of the scripts may take a few minutes depending on when the last built took place.
 
-Related publication:
+**Related publication:**
 
 Kern, D., & Nagel, T. (2022). An experimental numerics approach to the terrestrial brachistochrone. GAMM Archive for Students, 4(1), 29–35. https://doi.org/10.14464/gammas.v4i1.512
+
+**All scripts**
+
+If you want to work with several scripts, launch the entire repository on mybinder.org via [this link](https://mybinder.org/v2/gh/nagelt/Numerical_Methods_Introduction/HEAD)
+
+
+**Individual scripts:**
+
+If one of the specific scripts is of interest, you can launch them individually via the links below.
 
 
 [Explicit Euler](https://mybinder.org/v2/gh/nagelt/Numerical_Methods_Introduction/HEAD?labpath=01_Forward_Euler.ipynb)
