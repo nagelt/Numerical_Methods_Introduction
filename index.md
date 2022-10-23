@@ -15,6 +15,7 @@ If you want to work with several scripts, launch the entire repository on mybind
 
 If one of the specific scripts is of interest, you can launch them individually via the links below.
 
+[A naive introduction](https://mybinder.org/v2/gh/nagelt/Numerical_Methods_Introduction/HEAD?labpath=00_ODEs.ipynb)
 
 [Explicit Euler](https://mybinder.org/v2/gh/nagelt/Numerical_Methods_Introduction/HEAD?labpath=01_Forward_Euler.ipynb)
 
