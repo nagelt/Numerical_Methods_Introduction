@@ -65,3 +65,11 @@ If one of the specific scripts is of interest, you can launch them individually 
 
 [Some notes on Lagrange multipliers](https://mybinder.org/v2/gh/nagelt/Numerical_Methods_Introduction/HEAD?labpath=constrained_minimum.ipynb)
 
+[Beam examples -- collocation method](https://mybinder.org/v2/gh/nagelt/Numerical_Methods_Introduction/HEAD?labpath=Beams/04_collocation.ipynb)
+
+[Beam examples -- least squares method](https://mybinder.org/v2/gh/nagelt/Numerical_Methods_Introduction/HEAD?labpath=Beams/05_least_squares.ipynb)
+
+[Beam examples -- subdomain method](https://mybinder.org/v2/gh/nagelt/Numerical_Methods_Introduction/HEAD?labpath=Beams/06_subdomain.ipynb)
+
+[Beam examples -- Galerkin method](https://mybinder.org/v2/gh/nagelt/Numerical_Methods_Introduction/HEAD?labpath=Beams/08_galerkin.ipynb)
+
