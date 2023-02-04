@@ -63,6 +63,8 @@ If one of the specific scripts is of interest, you can launch them individually 
 
 [Simple 2D FEM example of potential flow, nodal flow rate calculation](https://mybinder.org/v2/gh/nagelt/Numerical_Methods_Introduction/HEAD?labpath=2D_FEM_2.ipynb)
 
+[2D FEM TH coupled advection-diffusion problem](https://mybinder.org/v2/gh/nagelt/Numerical_Methods_Introduction/HEAD?labpath=2D_Adv_Diff.ipynb)
+
 [Some notes on Lagrange multipliers](https://mybinder.org/v2/gh/nagelt/Numerical_Methods_Introduction/HEAD?labpath=constrained_minimum.ipynb)
 
 [Beam examples -- collocation method](https://mybinder.org/v2/gh/nagelt/Numerical_Methods_Introduction/HEAD?labpath=Beams/04_collocation.ipynb)
