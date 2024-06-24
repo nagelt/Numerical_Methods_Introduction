@@ -32,3 +32,5 @@ See https://nagelt.github.io
 **Related publication:**
 
 Kern, D., & Nagel, T. (2022). An experimental numerics approach to the terrestrial brachistochrone. GAMM Archive for Students, 4(1), 29–35. https://doi.org/10.14464/gammas.v4i1.512
+
+Kern, D., & Nagel, T. (2024). The essence of Biot waves in an oscillator with two degrees of freedom. GAMM Archive for Students, 6(1). https://doi.org/10.14464/gammas.v6i1.663
