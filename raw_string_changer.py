@@ -27,6 +27,16 @@ def replace_patterns_and_backslashes_in_ipynb(file_path):
         # Replace annotate(" with annotate(r"
         s = s.replace('annotate("', 'annotate(r"')
 
+        # Replace annotate(' with annotate(r'
+        s = s.replace("title('", "title(r'")
+        # Replace annotate(" with annotate(r"
+        s = s.replace('title("', 'title(r"')
+
+        # Replace annotate(' with annotate(r'
+        s = s.replace("text('", "text(r'")
+        # Replace annotate(" with annotate(r"
+        s = s.replace('text("', 'text(r"')
+
         # Replace double backslashes \\ with single backslash \
         s = s.replace('\\\\', '\\')
         return s
