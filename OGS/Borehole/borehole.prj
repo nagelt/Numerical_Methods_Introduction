@@ -147,7 +147,7 @@
             </timesteps>
             <!--output_iteration_results>false</output_iteration_results-->
             <variables>
-                <variable>displacement</variable>
+                <!-- <variable>displacement</variable>
                 <variable>pressure</variable>
                 <variable>pressure_interpolated</variable>
                 <variable>sigma</variable>
@@ -156,7 +156,7 @@
                 <variable>principal_stress_values</variable>
                 <variable>principal_stress_vector_1</variable>
                 <variable>principal_stress_vector_2</variable>
-                <variable>principal_stress_vector_3</variable>
+                <variable>principal_stress_vector_3</variable> -->
             </variables>
             <suffix>_ts_{:timestep}_t_{:time}</suffix>
         </output>
