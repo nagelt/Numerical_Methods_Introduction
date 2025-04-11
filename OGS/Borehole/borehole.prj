@@ -165,7 +165,7 @@
         <parameter>
             <name>E</name>
             <type>Constant</type>
-            <value>0.2e9</value>
+            <value>0.2e8</value>
         </parameter>
         <parameter>
             <name>nu</name>
