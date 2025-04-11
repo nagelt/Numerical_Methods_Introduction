@@ -28,7 +28,7 @@
             </secondary_variables>
             <specific_body_force>0 0</specific_body_force>
             <!--Initial Sterss-->
-            <initial_stress>Initial_stress</initial_stress>
+            <initial_stress type='total'>Initial_stress</initial_stress>
             <mass_lumping>true</mass_lumping>
         </process>
     </processes>
@@ -228,9 +228,9 @@
             <mesh>borehole_q8</mesh>
             <name>Initial_stress</name>
             <type>Function</type>
-            <expression>-4.4e6</expression>
-            <expression>-6.4e6</expression>
-            <expression>-4.4e6</expression>
+            <expression>-8e6</expression>
+            <expression>-10e6</expression>
+            <expression>-8e6</expression>
             <expression>0</expression>
         </parameter>
     </parameters>
