@@ -3,7 +3,7 @@ message: "If you use this software, please cite it as below."
 authors:
 - family-names: Nagel
   given-names: Thomas
-orcid: https://orcid.org/0000-0001-8459-4616
-title:Introduction to Numerical Methods for Geoengineers in Python: WS2024_25
+  orcid: https://orcid.org/0000-0001-8459-4616
+title: Introduction to Numerical Methods for Geoengineers in Python from WS2024_25
 version: WS2024_25
 date-released: 2025-04-29
