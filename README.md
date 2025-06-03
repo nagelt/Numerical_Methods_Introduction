@@ -29,6 +29,10 @@ See https://nagelt.github.io
 
 *Comments and contributions are welcome.*
 
+**Citation**
+
+Nagel, T. (2025). Introduction to Numerical Methods for Geoengineers in Python from WS2024_25 (WS2024_25). Zenodo. https://doi.org/10.5281/zenodo.15335885
+
 **Related publication:**
 
 Kern, D., & Nagel, T. (2022). An experimental numerics approach to the terrestrial brachistochrone. GAMM Archive for Students, 4(1), 29–35. https://doi.org/10.14464/gammas.v4i1.512
